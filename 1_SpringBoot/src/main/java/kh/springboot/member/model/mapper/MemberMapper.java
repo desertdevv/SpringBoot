@@ -19,5 +19,14 @@ public interface MemberMapper {
 
 	ArrayList<HashMap<String, Object>> selectMyList(String id);
 
+	int updateMember(Member m);
+
+	int updatePassword(Member m);
+
+	int updatePassword(HashMap<String, String> map);
+
+
+	int deleteMember(String id);
+
 
 }

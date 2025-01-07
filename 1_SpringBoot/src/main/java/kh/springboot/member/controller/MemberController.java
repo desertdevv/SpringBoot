@@ -3,12 +3,14 @@ package kh.springboot.member.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.catalina.Session;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
@@ -24,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequiredArgsConstructor//를해서 맴버 컨트롤러에 대한 객체 생성
 @SessionAttributes("loginUser")
+@RequestMapping("/member/")
+
 public class MemberController {
 	
 	
@@ -43,10 +47,10 @@ public class MemberController {
 	
 	
 	// 로그인 화면 연결
-	@GetMapping("/member/signIn")
+	@GetMapping("signIn")
 	public String signIn() {
 		
-		return "views/member/login" ;
+		return "login" ;
 	}
 	
 	/********* 파라미터 전송방법*********/
@@ -146,14 +150,14 @@ public class MemberController {
 //		}
 //	}
 	
-	@GetMapping("/member/enroll")
+	@GetMapping("enroll")
 	public String enroll() {
-		return "views/member/enroll";
+		return "enroll";
 	}
 	
 
 	
-	@PostMapping("member/enroll")
+	@PostMapping("enroll")
 	public String enroll(@ModelAttribute Member m, @RequestParam("emailId") String emailId, @RequestParam("emailDomain") String emailDomain) {
 		
 		if(!emailId.trim().equals("")) {
@@ -232,7 +236,7 @@ public class MemberController {
 	
 	//2. ModelAndview 이용
 //	 model + view
-	@GetMapping("/member/myInfo")
+	@GetMapping("myInfo")
 	public ModelAndView myInfo(HttpSession session, ModelAndView mv) {
 		Member loginUser = (Member)session.getAttribute("loginUser");
 		if(loginUser != null) {
@@ -242,7 +246,7 @@ public class MemberController {
 			ArrayList<HashMap<String,Object>> list = mService.selectMyList(id);
 //			System.out.println(list);
 			mv.addObject("list",list);
-			mv.setViewName("views/member/myInfo");			
+			mv.setViewName("myInfo");			
 		}
 		
 		return mv;
@@ -251,7 +255,7 @@ public class MemberController {
 
 	// 암호화 후 로그인 + @SessionAttribute
 	//		@SessionAttribute는 model에 attribute가 추가될때 자동으ㅗㄹ 키 값을 찾아 세션에 등록하는 어노테이션
-	@PostMapping("/member/signIn")
+	@PostMapping("signIn")
 	public String login(Member m, Model model) {
 		
 
@@ -281,11 +285,121 @@ public class MemberController {
 	
 	//@SessionAttribute 추가후 로그아웃
 	
-	@GetMapping("/member/logout")
+	@GetMapping("logout")
 	public String logout(SessionStatus session) {
 		session.setComplete();
 		return "redirect:/home";
 	}
+	
+	
+	
+	
+	//url로진행했기때문에 getmapping
+	@GetMapping("edit")
+	public String edit() {
+		return "edit";
+	}
+	
+	
+	
+	
+	
+	// 보내는애가 ~/edit임으로 post매핑
+	
+	@PostMapping("/edit")
+	public String edit(@ModelAttribute Member m, @RequestParam("emailId") String emailId, 
+						@RequestParam("emailDomain") String emailDomain, Model model) {
+		if(!emailId.trim().equals("")) {
+			m.setEmail(emailId+"@"+emailDomain);
+		}
+		
+		int result = mService.updateMember(m);
+		if(result > 0) {
+			model.addAttribute("loginUser",mService.login(m));
+			return "redirect:/member/myInfo";
+			
+		}else {
+			throw new MemberException("수정실패");
+		}
+	}
+	
+	
+	
+	
+	
+	
+//	@PostMapping("/updatePassword")
+//	public String updatePassword(@RequestParam("currentPwd") String currentPwd,
+//								@RequestParam("newPwd") String newPwd,
+//								@RequestParam("newPwdConfirm") String newPwdConfirm, Model model) {
+//		
+//		Member m = (Member)model.getAttribute("loginUser");
+//		// login을 가져와야하기때문에 이렇게.
+//		
+//		if(!bcrypt.matches(currentPwd, m.getPwd()) || !newPwd.equals(newPwdConfirm)) {
+//			throw new MemberException("비밀번호가 달라용 ㅋㅋ");
+//		}
+//		
+//		m.setPwd(bcrypt.encode(newPwd));
+//		
+//		
+//		int result = mService.updatePwd(m);
+//		
+//		
+//		if(result > 0) {
+//			model.addAttribute("loginUser",mService.login(m));
+//			return "myInfo";
+//		}else {
+//			throw new MemberException("수정실패");
+//		}
+//	}
+	
+
+	@PostMapping("/updatePassword")
+	public String updatePassword(@RequestParam("currentPwd") String pwd,
+								@RequestParam("newPwd") String newPwd,
+							 Model model) {
+		
+		Member m = (Member)model.getAttribute("loginUser");
+		
+		if(bcrypt.matches(pwd, m.getPwd())) {
+			HashMap<String,String> map = new HashMap<String,String>();
+			map.put("id", m.getId());
+			map.put("newPwd", bcrypt.encode(newPwd));
+			
+			
+			int result = mService.updatePassword(map);
+			if(result>0) {
+				model.addAttribute("loginUser",mService.login(m));
+				return "redirect:/home";
+			}else {
+				throw new MemberException("비밀번호 수정실패 ㅋㅋㅋ");
+			}
+				
+		}else {
+			throw new MemberException("비밀번호수정시랲 ㅋㅋ");
+		}
+		
+		
+	}
+	
+
+
+	@GetMapping("delete")
+	public String delete(HttpSession session) {
+		int result= mService.deleteMember(((Member)session.getAttribute("loginUser")).getId());
+	
+		if(result > 0) {
+			return "redirect:/member/logout";
+		}else {
+			throw new MemberException("삭제  실패 ㅋㅋㅋ");
+		}
+
+	}
+	
+	
+	
+	
 	
 	
 }

@@ -51,4 +51,31 @@
 	
 	</select>
 	
+	<update id="updateMember">
+	update member
+	set name =#{name}, nickName=#{nickName}, email=#{email}, gender=#{gender}, age=#{age}, 
+	phone=#{phone}, address=#{address}, update_date=sysdate
+	where id = #{id}
+	
+	
+	</update>
+	
+	
+	<update id="updatePassword">
+	update member
+	set pwd = #{newPwd}
+	where id = #{id}
+	
+	
+	</update>
+	
+	<update id="deleteMember">
+		update member
+		set member_status = 'N'
+		where id = #{id}
+	</update>
+	
+	
+	
+	
 </mapper>

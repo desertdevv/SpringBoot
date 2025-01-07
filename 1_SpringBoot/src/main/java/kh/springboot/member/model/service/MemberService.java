@@ -31,6 +31,23 @@ public class MemberService {
 		return mapper.selectMyList(id);
 	}
 
+	public int updateMember(Member m) {
+		return mapper.updateMember(m);
+	}
+
+	public int updatePassword(HashMap<String, String> map) {
+		return mapper.updatePassword(map);
+	}
+
+
+	public int deleteMember(String id) {
+		return mapper.deleteMember(id);
+	}
+
+
+
+
+
 
 
 }

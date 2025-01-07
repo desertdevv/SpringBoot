@@ -23,6 +23,7 @@
 					<h1 class="display-5 fw-bold">
 						<abbr title="if you click this, you can go main page(/home).">
 							<a href="/home">[[${session.loginUser.nickName}]]'s Information</a>
+						</abbr>
 					</h1>
 					<label id="delete">> 탈퇴하기</label>
 				</div>
@@ -45,7 +46,7 @@
 							<tr><td>UPDATE</td><td>[[${session.loginUser.updateDate}]]</td></tr>
 						</table>
 						<br>
-						<button class="btn btn-outline-light" type="button">EDIT MY INFO</button>
+						<button class="btn btn-outline-light" type="button" onclick="location.href='/member/edit'">EDIT MY INFO</button>
 					</div>
 				</div>
 				<div class="col-md-6">
