@@ -1,0 +1,31 @@
+EXTRACT (XX FROM 날짜)
+
+NVL (XXX , 'X') 
+해당컬럼의 NULL 을 'X'로 바꿔준다
+
+
+선택함수
+
+DECODE(계산식 | 컬럼명, 조건값1,선택값1 , 조건값N, 선택값 N)
+
+CASE WHEN 조건식 THEN 결과값
+WHEN 조건식 N THEN 결과값 N
+ELSE
+
+END
+
+
+
+그룹 함수
+
+GROUP BY 그룹을 묶어준다
+SELECT 에 '그룹'에 대한 조건을 달아줘야된다
+
+HAVING 
+GROUP BY 그룹함수에대한 조건.
+
+ORDER BY 정렬 조건
+
+ORDER BY SALARY DESC (NULLS LAST)
+NULLS LAST 안넣으면 널이 맨위에
+
