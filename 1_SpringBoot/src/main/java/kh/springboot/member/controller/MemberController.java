@@ -369,6 +369,8 @@ public class MemberController {
 			
 			
 			int result = mService.updatePassword(map);
+			
+			
 			if(result>0) {
 				model.addAttribute("loginUser",mService.login(m));
 				return "redirect:/home";

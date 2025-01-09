@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body class="bg-light">
+	<div th:replace="views/common/navbar.html"></div>
+	<div class="container">
+		<main>
+			<div class="py-5 text-center">
+				<a href="/home"><img class="d-block mx-auto mb-4" src="/image/springboot.png" width="130"></a>
+				<h2>WRITE BOARD</h2>
+			</div>
+
+			<div style="margin-left: 350px; margin-right: 350px;">
+				<form class="needs-validation" action="/board/insert" method="POST">
+					<div class="row g-3">
+						<div class="col-12">
+							<label for="boardTitle" class="form-label">TITLE</label>
+							<input type="text" class="form-control" id="boardTitle" name="boardTitle">
+						</div>
+
+						<div class="col-12">
+							<div class="input-group">
+					          <span class="input-group-text">CONTENT</span>
+					          <textarea class="form-control" rows="10" name="boardContent" style="resize: none;"></textarea>
+					        </div>
+						</div>
+						
+						<br><br><br><br><br>
+						
+						<button class="w-100 btn btn-success btn-lg">SUBMIT</button>
+						<button class="w-100 btn btn-dark btn-lg" type="button" onclick="javascript:history.back();">BACK</button>
+					</div>
+				</form>
+			</div>
+		</main>
+
+		<footer class="my-5 pt-5 text-muted text-center text-small"></footer>
+	</div>
+</body>
+</html>

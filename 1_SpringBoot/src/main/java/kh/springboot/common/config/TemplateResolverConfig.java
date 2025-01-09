@@ -9,6 +9,20 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 //새로운 빈을 넣을거니까 사용
 public class TemplateResolverConfig {
 	
+	
+   @Bean
+   public ClassLoaderTemplateResolver boardResolver() {
+      ClassLoaderTemplateResolver bResolver = new ClassLoaderTemplateResolver();
+      bResolver.setPrefix("templates/views/board/");
+      bResolver.setSuffix(".html");
+      bResolver.setTemplateMode(TemplateMode.HTML);
+      bResolver.setCharacterEncoding("UTF-8");
+      bResolver.setCacheable(false);
+      bResolver.setCheckExistence(true);
+      return bResolver;
+   }
+   
+   
 	@Bean
 	public ClassLoaderTemplateResolver memberResolver() {
 		ClassLoaderTemplateResolver mResolver = new ClassLoaderTemplateResolver();
@@ -23,6 +37,10 @@ public class TemplateResolverConfig {
 		// 제일 중요한 설정. 얘를 넣어주면 자동으로 돌아가면서 찾아준다. 그래서 밖에있는 home도 위치를 찾아준다.
 		return mResolver;
 	}
+	
+
+
+
 	
 	
 
