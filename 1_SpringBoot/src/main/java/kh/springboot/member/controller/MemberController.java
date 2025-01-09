@@ -71,7 +71,7 @@ public class MemberController {
 //			value				view에서 받아올 파라미터 이름(view의 name)이 들어가는 곳
 //								@RequestParam에 들어가는 속성이 value만 있다면 생략가능
 //			defaultvalue		값이 null이거나 들어오지 않았을 때 기복적으로 들어갈 데이터를 지정하는 속성
-//			required			기본 값 true, 지정한 파라미터가 꼭 필요한(필수적인) 변수인지 설저앟는 속성
+//			required			기본 값 true, 지정한 파라미터가 꼭 필요한(필수적인) 변수인지 설정하는 속성
 
 //	@PostMapping("/member/signIn")
 ////	public void login(@RequestParam("id") String userId, @RequestParam("pwd") String userPwd) {
