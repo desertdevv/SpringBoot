@@ -96,7 +96,7 @@ public class BoardController {
 			throw new BoardException("글만들기 실패");
 		}		
 		
-		
+		 
 		
 	}
 	
