@@ -25,7 +25,6 @@ public interface MemberMapper {
 
 	int updatePassword(HashMap<String, String> map);
 
-
 	int deleteMember(String id);
 
 
