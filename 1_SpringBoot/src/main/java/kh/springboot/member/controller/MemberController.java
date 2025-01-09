@@ -252,7 +252,7 @@ public class MemberController {
 		return mv;
 	}	
 	
-
+ 
 	// 암호화 후 로그인 + @SessionAttribute
 	//		@SessionAttribute는 model에 attribute가 추가될때 자동으ㅗㄹ 키 값을 찾아 세션에 등록하는 어노테이션
 	@PostMapping("signIn")
