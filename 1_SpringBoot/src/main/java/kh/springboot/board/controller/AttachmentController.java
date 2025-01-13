@@ -122,7 +122,7 @@ public class AttachmentController {
 			result2 = bService.insertAttm(list);
 		}
 		
-		if(result1 + result2 == list.size()+1) {
+		if(result1 + result2 == list.size() + 1) {
 			if(result2 == 0) {
 				return "redirect:/board/list";
 			}else {
