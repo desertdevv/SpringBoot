@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>td:hover{cursor: pointer;}</style>
+</head>
+<body>
+   <div th:replace="views/common/navbar.html"></div>
+   
+   <div class="container py-4">
+      <div class="bd-example-snippet bd-code-snippet">
+         <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+               <h1 class="display-5 fw-bold">General Board</h1>
+            </div>
+         </div>
+         <div class="bd-example">
+            <table class="table table-hover">
+               <thead>
+                  <tr>
+                     <th width="80px">글 번호</th>
+                     <th>글 제목</th>
+                     <th width="130px">작성자</th>
+                     <th width="130px">작성일자</th>
+                     <th width="80px">조회수</th>
+                      </tr>
+                   </thead>
+                  <tbody> 
+                      <tr th:each="b : ${list}" >
+                            <td th:text="${b.boardId}"></td>
+                            <td th:text="${b.boardTitle}"></td>
+                            <td th:text="${b.nickName}"></td>
+                            <td th:text="${#strings.arraySplit(b.createDate, ' ')[0]}"></td>
+                            <td th:text="${b.boardCount}"></td>
+                        </tr>
+
+                   </tbody>
+              </table>
+             </div>
+      </div>
+        <nav aria-label="Standard pagination example" style="float: right;">
+<!--            		이전 -->
+          
+           <ul class="pagination">
+           
+               <li class="page-item">
+                  <a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous">
+                     <span aria-hidden="true">&laquo;</span>
+                  </a>
+               </li>
+               
+<!--                페이지숫자 -->
+               <li class="page-item" th:each="p :${#numbers.sequence(pi.startPage, pi.endPage)}">
+               	<a class="page-link" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
+               </li>
+               
+               
+<!--                다음 -->
+               <li class="page-item">
+                  <a class="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next">
+                     <span aria-hidden="true">&raquo;</span>
+                  </a>
+               </li>
+          </ul>
+        </nav>
+      <!-- 로그인 했을 때만 버튼 보이게 -->      
+          <button th:if="${session.loginUser}" class="btn btn-outline-success" type="button" onclick="location.href='/board/write'">WRITE BOARD</button>
+   </div>
+   
+   
+   <script th:inline="javascript">
+   	window.onload=()=>{
+   		const tbody = document.querySelector('tbody');
+   		const tds = tbody.querySelectorAll('td');
+   		for(const td of tds){
+   			td.addEventListener('click',function(){
+   				const trTds = this.parentElement.querySelectorAll('td');
+   				const boardId = trTds[0].innerText;
+   				location.href="/board/" + boardId + "/" + '[[${pi.currentPage}]]'; 
+   				//location.href="/board/" + boardId + "/" + /*<!{CDATA[*//*[[${pi.currentPage}]]*/1/*]]>*/; 
+   				// 1을 넣어주는 이유는 아무값이나 들어가도 상관없는데 이게 없으면 일반 html에서 불완전하게 끝남으로(이 뒤값이 아예 안보이니까) 1이아니여도 아무거나 넣어줘도된다
+   				
+   				// /board/10/2   글번호/페이지형식으로 넣을거임
+   			});
+   		}
+   	}
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   </script>
+</body>
+</html>

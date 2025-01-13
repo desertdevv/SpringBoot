@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kh.springboot.board.model.mapper.BoardMapper">
+
+	<select id ="getListCount" resultType="_int">
+		select count(*)
+		from board
+		where board_status = 'Y' and board_type = #{i}
+	</select>
+
+	<select id="selectBoardList" resultMap="boardResultSet">
+		select *
+		from board
+			join member on(board_writer =id)
+		where board_status = 'Y' and board_type = #{i}
+		order by board_id desc
+	</select>
+	
+	<resultMap type="Board" id="boardResultSet">
+		<result column="BOARD_CREATE_DATE" property="createDate"/>
+		<result column="BOARD_MODIFY_DATE" property="modifyDate"/>
+		<result column="BOARD_STATUS" property="status"/>
+	</resultMap>
+	
+	<insert id="insertBoard">
+		insert into board
+		values (seq_bid.nextval, #{boardTitle}, #{boardWriter}, #{boardContent},default,sysdate,sysdate,default,#{boardType})
+	</insert>
+
+	<select id="selectBoard">
+		select *
+		from board
+			join member on(board_writer = id)
+		where board_status = 'Y' and board_id = #{bId}
+<!-- 		'Y'를 추가안해주면 url을타고 삭제된걸 볼수가있어서 넣어준다. -->
+	</select>
+
+	<update id="updateCount">
+		update board
+		set board_count = board_count +1
+		where board_id = #{bId}
+	</update>
+	
+	<update id ="updateBoard">
+		update board
+		set board_title=#{boardTitle}, board_content=#{boardContent}, board_modify_date=sysdate
+		where board_id=#{boardId}
+	</update>
+
+	<update id ="deleteBoard">
+		update board
+		set board_status = 'N'
+		where board_id =#{bId}
+	</update>
+
+	<select id="selectAttmBoardList" resultType="Attachment">
+		select *
+		from attachment
+		where attm_status = 'Y' and attm_level =0
+		order by attm_id
+	</select>
+	
+	<insert id="insertAttm">
+		insert all
+		
+		<foreach collection="list" item="item" separator=" ">
+			into attachment
+			values(new_aid, seq_bid.currval, #{item.originalName}, #{item.renameName},#{item.attmPath},#{item.attmLevel},default)
+		</foreach>
+		select * from dual
+<!-- 		select을 할필요가 없지만 문법상 무조건 넣어야 하기때문에 가상테이블인 dual에서 가져온다. -->
+
+	</insert>
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body class="bg-light">
+	<div th:replace="views/common/navbar.html"></div>
+	<div class="container">
+		<main>
+			<div class="py-5 text-center">
+				<a href="/home"><img class="d-block mx-auto mb-4" src="/image/springboot.png" width="130"></a>
+				<h2>BOARD UPDATE FORM</h2>
+			</div>
+
+			<div style="margin-left: 350px; margin-right: 350px;">
+				<form class="needs-validation"  method="POST" action="/board/update">
+					<input type="hidden" name="boardId" th:value="${b.boardId}">
+					<input type="hidden" name="page" th:value="${page}">
+					<div class="row g-3">
+						<div class="col-12">
+							<label for="boardTitle" class="form-label">TITLE</label>
+							<input type="text" class="form-control" id="boardTitle" name="boardTitle" th:value="${b.boardTitle}">
+						</div>
+
+						<div class="col-12">
+							<div class="input-group">
+					          <span class="input-group-text">CONTENT</span>
+					          <textarea class="form-control" rows="10" name="boardContent" style="resize: none;" >[[${b.boardContent}]]</textarea>
+					        </div>
+						</div>
+						
+						<br><br><br><br><br>
+						
+							<button class="w-100 btn btn-success btn-lg">UPDATE</button>
+							<button class="w-100 btn btn-secondary btn-lg" type="button" onclick="javascript:history.back();">BACK</button>
+							<button class="w-100 btn btn-dark btn-lg" type="button" th:onclick="|location.href='/board/list?page=${page}'|">GO TO LIST</button>
+							
+					</div>
+				</form>
+			</div>
+		</main>
+
+		<footer class="my-5 pt-5 text-muted text-center text-small"></footer>
+			
+	
+	</div>
+	
+</body>
+</html>

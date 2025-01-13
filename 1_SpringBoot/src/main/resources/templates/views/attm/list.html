@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<style>
+	.album .col {cursor: pointer;}
+	.bd-placeholder-img {font-size: 1.125rem; text-anchor: middle;}
+	.card *:hover {cursor: pointer;}
+</style>
+<title>Insert title here</title>
+</head>
+<body>
+	<div th:replace="views/common/navbar.html"></div>
+	<main>
+		<section class="py-5 text-center container">
+			<div class="row py-lg-5">
+				<h1 class="fw-light">Attachment Board</h1>
+			</div>
+		</section>
+
+		<div class="album py-5 bg-light">
+			<div class="container">
+				<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+					<!-- 게시글 개수만큼 div 반복 -->
+					<div class="col" th:each="b:${bList}">
+						<div class="card shadow-sm">
+							<th:block th:each="a:${aList}" th:if="${b.boardId eq a.refBoardId}">
+								<img th:if="${#strings.containsIgnoreCase(a.renameName, 'jpg') or #strings.containsIgnoreCase(a.renameName, 'png')}" src="#" width="100%" height="225">
+	<!-- 							containsIgnoreCase() : 대소문자를 무시 하고 구별해줌 -->
+								<svg class="bd-placeholder-img card-img-top" width="100%" height="225" th:unless="${#strings.containsIgnoreCase(a.renameName, 'jpg') or #strings.containsIgnoreCase(a.renameName, 'png')}">
+									<rect width="100%" height="100%" fill="#55595c" />
+									<text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
+								</svg>
+								<div class="card-body">
+									<p class="card-text">
+										<label class="bId">NO. [[${b.boardId}]]</label> | <label class="writer">[[${b.nickName}]]</label>
+									</p>
+									<div class="d-flex justify-content-between align-items-center">
+										[[${b.boardTitle}]] <small class="text-muted">[[${b.boardCount}]] Views</small>
+									</div>
+								</div>
+							</th:block>
+							
+						</div>
+					</div>
+					
+				</div>
+				<br><br><br>
+				<nav aria-label="Standard pagination example" style="float: right;">
+					<ul class="pagination">
+						<li class="page-item">
+							<a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous">
+								<span aria-hidden="true">&laquo;</span>
+							</a>
+						</li>
+						
+						<li class="page-item" th:each="p:${#numbers.sequence(pi.startPage, pi.endPage)}">
+							<a class="page-link" th:href="@{${loc}(page=${p})}" th:text="${p}"></a>
+						</li>
+						
+						<li class="page-item">
+							<a class="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next"> 
+								<span aria-hidden="true">&raquo;</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+				<button class="btn btn-outline-success" type="button" th:if="${session.loginUser}" onclick="location.href='/attm/write'">WRITE BOARD</button>
+			</div>
+		</div>
+	</main>
+</body>
+</html>
