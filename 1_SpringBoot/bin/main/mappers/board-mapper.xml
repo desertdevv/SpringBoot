@@ -22,9 +22,18 @@
 		<result column="BOARD_STATUS" property="status"/>
 	</resultMap>
 	
+	
+<!-- 	
+selectKey 적용 시키기 
+	insert 나 update를 하고 나서 사용할 키(시퀀스) 값을 조회해서 피라미터로 전달받아 객체 필드에 대입
+
+-->
 	<insert id="insertBoard">
+		<selectKey order="BEFORE" resultType="_int" keyProperty="boardId">
+			select seq_bid.nextval from dual
+		</selectKey>
 		insert into board
-		values (seq_bid.nextval, #{boardTitle}, #{boardWriter}, #{boardContent},default,sysdate,sysdate,default,#{boardType})
+		values (#{boardId}, #{boardTitle}, #{boardWriter}, #{boardContent},default,sysdate,sysdate,default,#{boardType})
 	</insert>
 
 	<select id="selectBoard">
@@ -56,7 +65,14 @@
 	<select id="selectAttmBoardList" resultType="Attachment">
 		select *
 		from attachment
-		where attm_status = 'Y' and attm_level =0
+		where attm_status = 'Y' 
+		<if test="bId == null">
+			and attm_level =0
+		</if>
+		<if test='bId != null'>
+			and ref_board_id = #{bId}
+		</if>
+		
 		order by attm_id
 	</select>
 	
@@ -65,7 +81,7 @@
 		
 		<foreach collection="list" item="item" separator=" ">
 			into attachment
-			values(new_aid, seq_bid.currval, #{item.originalName}, #{item.renameName},#{item.attmPath},#{item.attmLevel},default)
+			values(new_aid, #{item.refBoardId}, #{item.originalName}, #{item.renameName},#{item.attmPath},#{item.attmLevel},default)
 		</foreach>
 		select * from dual
 <!-- 		select을 할필요가 없지만 문법상 무조건 넣어야 하기때문에 가상테이블인 dual에서 가져온다. -->

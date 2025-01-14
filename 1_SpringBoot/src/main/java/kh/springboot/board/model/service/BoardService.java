@@ -70,8 +70,8 @@ public class BoardService {
 		return mapper.deleteBoard(bId);
 	}
 
-	public ArrayList<Attachment> selectAttmBoardList() {
-		return mapper.selectAttmBoardList();
+	public ArrayList<Attachment> selectAttmBoardList(Integer bId) {
+		return mapper.selectAttmBoardList(bId);
 	}
 
 	public int insertAttm(ArrayList<Attachment> list) {
