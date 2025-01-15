@@ -52,7 +52,7 @@ selectKey 적용 시키기
 	
 	<update id ="updateBoard">
 		update board
-		set board_title=#{boardTitle}, board_content=#{boardContent}, board_modify_date=sysdate
+		set board_title=#{boardTitle}, board_content=#{boardContent}, board_modify_date=sysdate, board_type=#{boardType}
 		where board_id=#{boardId}
 	</update>
 
@@ -87,7 +87,27 @@ selectKey 적용 시키기
 <!-- 		select을 할필요가 없지만 문법상 무조건 넣어야 하기때문에 가상테이블인 dual에서 가져온다. -->
 
 	</insert>
+	
+	
+	<delete id="deleteAttm">
+<!-- 		전달받은 rename에 해당하는 첨부 파일 데이터 삭제	 -->
+		delete from attachment
+		where rename_name in
+		<foreach collection="list" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+		
+	</delete>
+	
+	<update id="updateAttmLevel">
+<!-- 		해당 게시글의 기존 파일중 하나를 level = 0 으로 수정 -->
+		update attachment
+		set	attm_level = 0
+		where attm_id = (select min(attm_id)
+						from attachment
+						where ref_board_id = #{boardId})
 
+	</update>
 
 
 

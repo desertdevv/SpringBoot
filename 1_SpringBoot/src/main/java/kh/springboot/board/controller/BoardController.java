@@ -186,6 +186,7 @@ public class BoardController {
 	
 	@PostMapping("update")
 	public String updateBoard(@ModelAttribute Board b, @RequestParam("page") int page) {
+		b.setBoardType(1);
 		int result = bService.updateBoard(b);
 		if(result>0) {
 //			return "redirect:/board/"+ b.getBoardId()+ "/" +page;

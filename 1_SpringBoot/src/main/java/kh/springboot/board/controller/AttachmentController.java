@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.springframework.stereotype.Controller;
@@ -226,5 +227,166 @@ public class AttachmentController {
 		}
 	}
 	
+	
+	@PostMapping("updForm")
+	public String updateForm(@RequestParam("boardId") int bId, @RequestParam("page") int page, Model model) {
+		Board b = bService.selectBoard(bId, null);
+		ArrayList<Attachment> list = bService.selectAttmBoardList(bId);
+		
+		model.addAttribute("b",b).addAttribute("list",list).addAttribute("page",page);
+		return "views/attm/edit";
+	}
+	
+	
+	@PostMapping("update")
+	public String updateBoard(@ModelAttribute Board b,@RequestParam("page") int page,
+								@RequestParam("deleteAttm") String[] deleteAttm, @RequestParam("file") ArrayList<MultipartFile> files) {
+		
+		
+		System.out.println(b);
+		System.out.println(Arrays.toString(deleteAttm));
+		for(MultipartFile mf : files) {
+			System.out.println("fileName : " + mf.getOriginalFilename());
+		}
+		
+		/*
+		  1. 새 파일 o
+		 	1) 기존 파일 모두 삭제 > 기존파일 모두삭제 & 새 파일 저장
+		 						새 파일 중에서 level 0, 1 지정해줘야한다
+Board(boardId=30, boardTitle=마술하나 보여줄까 ?, boardWriter=null, nickName=null, boardContent=우 후후후, boardCount=0, createDate=null, modifyDate=null, status=null, boardType=0)
+[202501141046333954743.jpg/0, 2025011410463339934295.jpg/1]
+fileName : 태혁군.jpg			
+		 						
+		 	2) 기존 파일 일부 삭제 > 기존파일 일부삭제 & 새파일저장
+		 						삭제할 파일의 level을 먼저 검사 후
+		 						level이 0인 파일이 삭제되면 다른 기존파일의 레벨을 0으로 재지정
+		 						새파일은 모두 1로 지정
+Board(boardId=30, boardTitle=마술하나 보여줄까 ?, boardWriter=null, nickName=null, boardContent=우 후후후, boardCount=0, createDate=null, modifyDate=null, status=null, boardType=0)
+[202501141046333954743.jpg/0, ]
+fileName : 태혁군.jpg
+fileName :					
+		 						
+		 	3) 기존 파일 모두 유지 > 새 파일 저장
+		 						새 파일의 레벨은 모두 1로 저장
+Board(boardId=30, boardTitle=마술하나 보여줄까 ?, boardWriter=null, nickName=null, boardContent=우 후후후, boardCount=0, createDate=null, modifyDate=null, status=null, boardType=0)
+[, ] :2 
+or
+[] : 0 기존 첨부파일은 1개인 상황에서 삭제를 안하겠다.
+fileName : 태혁군.jpg
+fileName : 		 						
+		 						
+		  2. 새 파일 x
+		 	1) 기존 파일 모두 삭제 > 기존 파일 모두 삭제
+		 						일반 게시판으로 이동 : board_type = 1
+Board(boardId=30, boardTitle=마술하나 보여줄까 ?, boardWriter=null, nickName=null, boardContent=우 후후후, boardCount=0, createDate=null, modifyDate=null, status=null, boardType=0)
+[202501141046333954743.jpg/0, 2025011410463339934295.jpg/1]
+fileName : 		 						
+		 						
+		 	2) 기존 파일 일부 삭제 > 기존 파일 일부 삭제
+		 						삭제할 파일의 level 검사후 level이 0인 파일이 삭제되면
+		 						다른기존 파일의 레벨을 0으로 재지정
+		 						
+Board(boardId=30, boardTitle=마술하나 보여줄까 ?, boardWriter=null, nickName=null, boardContent=우 후후후, boardCount=0, createDate=null, modifyDate=null, status=null, boardType=0)
+[202501141046333954743.jpg/0, ]
+fileName : 		 						
+		 	3) 기존 파일 모두 유지 > borad만 수정		 
+		 	
+Board(boardId=30, boardTitle=마술하나 보여줄까 ?, boardWriter=null, nickName=null, boardContent=우 후후후, boardCount=0, createDate=null, modifyDate=null, status=null, boardType=0)
+[, ]
+fileName : 		 	
+		  */
+		
+		b.setBoardType(2);
+		
+		// 새로 넣는 파일이 있다면 list에 옮겨닮는 작업 
+		ArrayList<Attachment> list = new ArrayList<Attachment>();
+		for(int i = 0; i<files.size(); i++) {
+			MultipartFile upload = files.get(i);
+			
+			if(!upload.getOriginalFilename().equals("")) {
+				String[] returnArr = saveFile(upload);
+				if(returnArr[1] != null) {
+					Attachment a = new Attachment();
+					a.setOriginalName(upload.getOriginalFilename());
+					a.setRenameName(returnArr[1]);
+					a.setAttmPath(returnArr[0]);
+					a.setRefBoardId(b.getBoardId());
+					
+					list.add(a);
+				}
+			}
+		}
+		
+		// 삭제할 파일이 있따면 삭제할 파일의 이름과 레벨을 가각 delRename과 delLevel에 옮겨담기
+		ArrayList<String> delRename = new ArrayList<String>();
+		ArrayList<Integer> delLevel = new ArrayList<Integer>();
+		for(String rename : deleteAttm) {
+			if(!rename.equals("")) {
+				String[] split = rename.split("/");
+				delRename.add(split[0]);
+				delLevel.add(Integer.parseInt(split[1]));
+			}
+		}
+		
+		int deleteAttmResult = 0;			// 파일 delete후 결과 값   
+		int updateBoardResult = 0;			// 게시글 update 후 결과 값
+		boolean existBeforeAttm = true;		// 이전 첨부파일이 존재하는지에 대한 여부
+		
+		if(!delRename.isEmpty()) {			// 저장했던 파일중 하나라도 삭제하겠다라는 경우
+			deleteAttmResult = bService.deleteAttm(delRename);
+			if(deleteAttmResult > 0) {
+				for(String rename : delRename) {
+					deleteFile(rename);
+				}
+			}
+			
+			if(deleteAttm.length !=0 && delRename.size() == deleteAttm.length) {			// 기존 파일을 모두 삭제했을때
+				existBeforeAttm = false;
+				if(list.isEmpty()) {
+					b.setBoardType(1);
+				}
+			}else {
+				for(int level : delLevel) {
+					if(level == 0) {
+						bService.updateAttmLevel(b.getBoardId());
+						break;
+					}
+				}
+			}
+		}
+		
+		for(int i = 0; i <list.size(); i++) {
+			Attachment a = list.get(i);
+			if(existBeforeAttm) {
+				a.setAttmLevel(1);
+			}else {
+				if(i==0) {
+					a.setAttmLevel(0);
+				}else {
+					a.setAttmLevel(1);
+				}
+			}
+		}
+		
+		
+		updateBoardResult = bService.updateBoard(b);
+		
+		int updateAttmResult = 0;
+		if(!list.isEmpty()) {
+			updateAttmResult = bService.insertAttm(list);
+		}
+		
+		if(updateBoardResult + updateAttmResult == list.size() + 1) {
+			if(deleteAttm.length !=0 && delRename.size() == deleteAttm.length&&updateAttmResult==0) {
+				return "redirect:/board/list";
+			}else{
+				return String.format("redirect:/attm/%d/%d", b.getBoardId(),page);
+			}
+		}else {
+			throw new BoardException("첨부파일 게식슬 수정을 실패하였습니다.");
+		}
+		
+		
+	}
 	
 }

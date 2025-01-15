@@ -31,6 +31,10 @@ public interface BoardMapper {
 	ArrayList<Attachment> selectAttmBoardList(Integer bId);
 
 	int insertAttm(ArrayList<Attachment> list);
+
+	int deleteAttm(ArrayList<String> delRename);
+
+	void updateAttmLevel(int boardId);
 	
 	
 
