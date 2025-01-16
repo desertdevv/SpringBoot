@@ -3,7 +3,6 @@ package kh.springboot.member.controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.apache.catalina.Session;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -400,8 +400,27 @@ public class MemberController {
 	}
 	
 	
+//	@GetMapping("checkId")
+//	public void chieckId(@RequestParam("id") String id, PrintWriter out) {
+//		int count = mService.checkId(id);
+//		out.print(count);
+//	}
+//	
+//	@GetMapping("checkNickName")
+//	@ResponseBody
+//	public String checkNickName(@RequestParam("nickName") String nickName) {
+//		int count = mService.checkNickName(nickName);
+//		return count == 0 ? "usable" : "unusable";
+//	}
 	
-	
-	
+	@GetMapping("checkValue")
+	@ResponseBody
+	public int checkValue(@RequestParam("value") String value, @RequestParam("column") String column) {
+		HashMap<String, String> map = new HashMap<String,String>();
+		map.put("value",value);
+		map.put("column",column);
+		int count = mService.checkValue(map);
+		return count;
+	}
 	
 }

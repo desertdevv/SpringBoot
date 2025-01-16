@@ -93,6 +93,10 @@ public class BoardService {
 	public void updateAttmLevel(int boardId) {
 		mapper.updateAttmLevel(boardId);
 	}
+
+//	public int statusNAttm(int bId) {
+//		return mapper.statusNAttm(bId);
+//	}
 	
 	
 	

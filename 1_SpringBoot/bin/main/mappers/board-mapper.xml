@@ -110,7 +110,11 @@ selectKey 적용 시키기
 	</update>
 
 
-
+<!-- 	<update id="statusNAttm"> -->
+<!-- 		update attachment -->
+<!-- 		set attm_status = 'N' -->
+<!-- 		where ref_board_id = #{bId} -->
+<!-- 	</update> -->
 
 
 

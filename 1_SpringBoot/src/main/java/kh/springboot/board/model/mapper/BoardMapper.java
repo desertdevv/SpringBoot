@@ -35,6 +35,8 @@ public interface BoardMapper {
 	int deleteAttm(ArrayList<String> delRename);
 
 	void updateAttmLevel(int boardId);
+
+//	int statusNAttm(int bId);
 	
 	
 

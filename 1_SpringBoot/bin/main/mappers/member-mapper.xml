@@ -75,7 +75,22 @@
 		where id = #{id}
 	</update>
 	
+<!-- 	<select id ="checkId" resultType="_int"> -->
+<!-- 		select count(*) -->
+<!-- 		from member -->
+<!-- 		where id = #{id} -->
+<!-- 	</select> -->
 	
+<!-- 	<select id ="checkNickName" resultType="_int"> -->
+<!-- 		select count(*) -->
+<!-- 		from member -->
+<!-- 		where NICKNAME = #{nickName} -->
+<!-- 	</select>	 -->
 	
+	<select id ="checkValue" resultType="_int">
+		select count(*)
+		from member
+		where ${column} = #{value}
+	</select>	
 	
 </mapper>

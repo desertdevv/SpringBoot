@@ -27,5 +27,11 @@ public interface MemberMapper {
 
 	int deleteMember(String id);
 
+	int checkId(String id);
+
+	int checkNickName(String nickName);
+
+	int checkValue(HashMap<String, String> map);
+
 
 }

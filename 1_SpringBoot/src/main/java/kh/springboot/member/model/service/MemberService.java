@@ -44,6 +44,18 @@ public class MemberService {
 		return mapper.deleteMember(id);
 	}
 
+	public int checkId(String id) {
+		return mapper.checkId(id);
+	}
+
+	public int checkNickName(String nickName) {
+		return mapper.checkNickName(nickName);
+	}
+
+	public int checkValue(HashMap<String, String> map) {
+		return mapper.checkValue(map);
+	}
+
 
 
 

@@ -239,7 +239,7 @@ public class AttachmentController {
 	
 	
 	@PostMapping("update")
-	public String updateBoard(@ModelAttribute Board b,@RequestParam("page") int page,
+	public String updateBoard(@ModelAttribute Board b, @RequestParam("page") int page,
 								@RequestParam("deleteAttm") String[] deleteAttm, @RequestParam("file") ArrayList<MultipartFile> files) {
 		
 		
@@ -388,5 +388,30 @@ fileName :
 		
 		
 	}
+	
+	
+//	@PostMapping("delete")
+//	public String deleteBoard(@RequestParam("boardId") int bId) {
+//		int result1 = bService.deleteBoard(bId);
+//		int result2 = bService.statusNAttm(bId);
+//		
+//		if(result1>0 && result2 >0) {
+//			return "redirect:/attm/list";
+//		}else {
+//			throw new BoardException("첨부파일 게시글 삭제를 실패하였습니돠 ㅋㅋㅋ");
+//		}
+//	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
