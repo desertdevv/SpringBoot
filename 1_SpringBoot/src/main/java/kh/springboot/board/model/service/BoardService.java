@@ -94,12 +94,16 @@ public class BoardService {
 		mapper.updateAttmLevel(boardId);
 	}
 
+
+
 //	public int statusNAttm(int bId) {
 //		return mapper.statusNAttm(bId);
 //	}
 	
 	
-	
+	public ArrayList<Board> selectTop() {
+		return mapper.selectTop();
+	}	
 	
 	
 	

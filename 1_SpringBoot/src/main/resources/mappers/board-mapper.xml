@@ -117,7 +117,17 @@ selectKey 적용 시키기
 <!-- 	</update> -->
 
 
-
+	<select id="selectTop" resultMap="boardResultSet">
+	
+		select *
+		from(select *
+			from board
+				join member on(id= board_writer) 
+			where BOARD_STATUS = 'Y'
+			order by board_count desc)
+		where rownum <![CDATA[<]]>= 5
+		
+	</select>
 
 
 

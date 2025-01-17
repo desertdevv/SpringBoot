@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Insert title here</title>
 <meta charset="utf-8">
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
 	<main>
@@ -21,6 +22,22 @@
 						The Spring Framework provides a comprehensive programming and configuration model 
 						for modern Java-based enterprise applications - on any kind of deployment platform.
 					</p>
+					
+					<p>
+						<table class="table">
+							<thead>
+								<tr>
+									<th width="100px">글 번호 </th>
+									<th> 글제목 </th>
+									<th width="200px">작성자</th>
+									<th width="200px">작성일자</th>
+									<th width="100px">조회수</th>
+								</tr>
+							</thead>	
+							<tbody></tbody>
+						</table>
+					</p>
+					
 					<th:block th:if="${session.loginUser==null}">
 <!-- 					<th:block th:unless="${session.loginUser!=null}"> 같은뜻임!-->
 						<button class="btn btn-primary btn-lg" type="button" onclick="location.href='/member/signIn'">SIGN IN</button>
@@ -61,5 +78,73 @@
 			<footer class="pt-3 mt-4 text-muted border-top"> &copy; 2022 </footer>
 		</div>
 	</main>
+	
+	<script>
+		const topList =() =>{
+			$.ajax({
+				url: '/board/top',
+// 				dataType: "json",
+				success: data =>{
+					const tbody = document.querySelector('tbody'); // tbody에 접근
+				    tbody.innerHTML = "";
+					console.log(data);
+					for(const b of data){
+// 						const no = b.boardId;
+// 						const title = b.boardTitle;
+// 						const writer = b.nickName;
+// 						const date = b.modifyDate;
+// 						const count = b.boardCount;
+						
+						
+						const tr = document.createElement('tr');
+						
+						const noTd = document.createElement('td');
+// 						noTd.appendChild(document.createTextNode(no));
+						const noVal = document.createTextNode(b.boardId);
+						noTd.append(noVal);
+	
+						const titleTd = document.createElement('td');
+						const titleVal = document.createTextNode(b.boardTitle);
+						titleTd.append(titleVal);
+
+						const writerTd = document.createElement('td');
+// 						writerTd.appendChild(document.createTextNode(writer));
+						writerTd.innerText = b.nickName;
+						
+						const createDateTd = document.createElement('td');
+// 						createDateTd.appendChild(document.createTextNode(date));
+						createDateTd.innerText = b.modifyDate;
+
+// 						const countTd = document.createElement('td');
+// // 						countTd.appendChild(document.createTextNode(count));
+// 						countTd.innerText = b.boardCount;
+
+						
+						tr.append(noTd);
+						tr.append(titleTd);
+						tr.append(writerTd);
+						tr.append(createDateTd);
+// 						tr.append(countTd);
+						tr.innerHTML += '<td>' + b.boardCount + '</td>';
+						//이방법도 가능
+						
+						tbody.append(tr);
+						}
+					},
+					error: data => console.log(data)
+				});
+			}
+
+			
+		window.onload = ()=>{
+			topList();
+			
+			setInterval(()=>{
+				topList();
+			}, 2000);
+		}
+
+
+	</script>
 </body>
 </html>
