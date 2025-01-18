@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body class="bg-light">
+	<div th:replace="views/common/navbar.html"></div>
+	<div class="container">
+		<main>
+			<div class="py-5 text-center">
+				<a href="/home"><img class="d-block mx-auto mb-4" src="/image/springboot.png" width="130"></a>
+				<h2>ATTACHMENT DETAIL</h2>
+			</div>
+
+			<div style="margin-left: 350px; margin-right: 350px;">
+				<form class="needs-validation"  method="POST" id="detailForm">
+					<input type="hidden" name="boardId" th:value="${b.boardId}">
+					<input type="hidden" name="page" th:value="${page}">
+					<div class="row g-3">
+						<div class="col-12">
+							<label for="boardTitle" class="form-label">TITLE</label>
+							<br>[[${b.boardTitle}]]
+						</div>
+
+						<div class="col-12">
+							<div class="input-group">
+					          <span class="input-group-text">CONTENT</span>
+					          <textarea class="form-control" rows="10" name="boardContent" style="resize: none;" readonly>[[${b.boardContent}]]</textarea>
+					        </div>
+						</div>
+						
+						<div class="row">
+						
+							<div class="mb-4"  th:each="a:${list}"> <!-- 첨부파일 만큼 반복 -->
+								<div class="card">
+									<!--  첨부파일이 이미지 파일이면 img태그가 나타남 -->
+									<img th:if="${#strings.containsIgnoreCase(a.renameName, 'jpg') or #strings.containsIgnoreCase(a.renameName, 'png')}" th:src="@{/}+${a.renameName}" width="100%" height="225">
+									
+									
+									<div class="card-body">
+										<h5 class="card-title">
+											<a th:href="@{/}+${a.renameName}" th:download="${a.originalName}">
+												[[${a.originalName}]]
+											</a>	
+										</h5>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						
+						
+						<br><br><br><br><br>
+						
+						<th:block th:if="${session.loginUser != null && session.loginUser.id == b.boardWriter}">
+							<button class="w-100 btn btn-success btn-lg" type="button" id="updateForm" >UPDATE</button>
+							<button class="w-100 btn btn-secondary btn-lg" type="button" id="deleteModal" >DELETE</button>
+						</th:block>
+							<button class="w-100 btn btn-secondary btn-lg" type="button" th:onclick="|location.href='/attm/list?page=${page}'|">GO TO LIST</botton>
+							<button class="w-100 btn btn-dark btn-lg" type="button" onclick="javascript:history.back();">BACK</button>
+							
+					</div>
+				</form>
+			</div>
+		</main>
+
+		<footer class="my-5 pt-5 text-muted text-center text-small"></footer>
+			
+		<div class="modal fade" tabindex="-1" role="dialog" id="modalChoice">
+			<div class="modal-dialog" role="document">
+	    		<div class="modal-content rounded-3 shadow">
+	      			<div class="modal-body p-4 text-center">
+	        			<h3 class="mb-0">정말 삭제하시겠습니까?</h3>
+	        			<p class="mb-0">삭제 후 게시글은 복구할 수 없습니다.</p>
+	      			</div>
+	      			<div class="modal-footer flex-nowrap p-0">
+	        			<button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0 border-end" id="delete">
+	        				<strong>네</strong>
+	        			</button>
+	        			<button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 m-0 rounded-0" data-bs-dismiss="modal">아니오</button>
+	      			</div>
+	    		</div>
+	  		</div>
+		</div>		
+	</div>
+	<script>
+		window.onload =()=>{
+			const upd = document.getElementById('updateForm');
+			const form = document.getElementById('detailForm');
+			if(upd != null){
+				upd.addEventListener('click',() =>{
+					form.action = '/attm/updForm';
+					form.submit();
+				});
+			}
+			
+			document.getElementById('deleteModal').addEventListener('click',()=>{
+				$('#modalChoice').modal('show');
+			});
+			
+			
+			document.getElementById('delete').addEventListener('click',()=>{
+				form.action = '/board/delete' ;
+				form.submit();
+			});
+			
+			
+		}
+	</script>
+</body>
+</html>
