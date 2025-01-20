@@ -128,6 +128,21 @@ selectKey 적용 시키기
 		where rownum <![CDATA[<]]>= 5
 		
 	</select>
+	
+	
+	<select id="selectReplyList" resultType="Reply">
+		select * 
+		from reply
+			join member on(reply_writer = id)
+		where ref_board_id = #{bId} and reply_status='Y'
+		order by reply_id desc
+	</select>
+	
+	
+	<insert id="insertReply">
+		insert into reply
+		values (seq_rid.nextval,#{replyContent},#{refBoardId},#{replyWriter},sysdate,sysdate,default)
+	</insert>
 
 
 

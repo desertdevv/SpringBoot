@@ -1,7 +1,10 @@
 package kh.springboot.board.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +13,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -22,6 +28,7 @@ import kh.springboot.board.model.exception.BoardException;
 import kh.springboot.board.model.service.BoardService;
 import kh.springboot.board.model.vo.Board;
 import kh.springboot.board.model.vo.PageInfo;
+import kh.springboot.board.model.vo.Reply;
 import kh.springboot.common.Pagination;
 import kh.springboot.member.model.vo.Member;
 import lombok.RequiredArgsConstructor;
@@ -152,7 +159,9 @@ public class BoardController {
 		}
 		 
 //		bid, id를 service에 넘겨서 글쓴이 비교 로직 작성
-		Board b = bService.selectBoard(bId,id);
+		Board b = bService.selectBoard(bId,id); // 보드가지고 오는 기능
+		
+		ArrayList<Reply> list = bService.selectReplyList(bId); // 댓글 가지고 오는 기능
 		
 		
 //		// 게시글이 존재하면, 게시글 데이터(b)와 페이지(page)를 /views/board/detail.html로 전달
@@ -160,6 +169,7 @@ public class BoardController {
 //		게시글이 존재하지않으면 사용자 정의 예외발생
 		
 		if(b!=null) {
+			mv.addObject("list",list);
 			mv.addObject("b",b).addObject("page",page).setViewName("detail");
 			return mv;
 		}else {
@@ -260,6 +270,79 @@ public class BoardController {
 	}
 	
 	
+	
+//	// json 버전
+//	@GetMapping(value="rinsert")
+////	@GetMapping(value="rinsert" ,produces="application/json; charset=UTF-8")
+//	@ResponseBody
+//	public String insertReply(@ModelAttribute Reply r,HttpServletResponse response) {
+//		response.setContentType("application/json; charset=UTF-8");
+//		System.out.println(r);
+//		int result = bService.insertReply(r);
+//		
+//		ArrayList<Reply> list = bService.selectReplyList(r.getRefBoardId()); //insert를 하면 그결과를 다시 받와야하니까
+//		
+//		for(Reply a : list) {
+//			System.out.println(a);
+//		}
+//		
+//		JSONArray array = new JSONArray();
+//			for(Reply reply: list) {
+//				JSONObject json = new JSONObject();
+//				json.put("replyContent", reply.getReplyContent());
+//				json.put("nickName", reply.getNickName());
+//				json.put("replyModifyDate", reply.getReplyModifyDate());
+//			
+//				array.put(json);
+//			}
+//			
+//			return array.toString();
+//		}
+//	
+	
+	
+//	//gson버전
+//	@GetMapping(value="rinsert")
+//	@ResponseBody
+//	public void insertReply(@ModelAttribute Reply r,HttpServletResponse response) {
+//		int result = bService.insertReply(r);
+//		
+//		ArrayList<Reply> list = bService.selectReplyList(r.getRefBoardId()); //insert를 하면 그결과를 다시 받와야하니까
+//		
+//		response.setContentType("application/json; charset=UTF-8");
+//		GsonBuilder gb = new GsonBuilder().setDateFormat("yyyy-MM-dd");
+//		Gson gson = gb.create();	
+//		
+//		try {
+//			gson.toJson(list, response.getWriter());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+	
+	
+	//jaskon
+	@GetMapping(value="rinsert" ,produces="application/json; charset=UTF-8")
+	@ResponseBody
+	public String insertReply(@ModelAttribute Reply r) {
+		int result = bService.insertReply(r);
+		ArrayList<Reply> list = bService.selectReplyList(r.getRefBoardId());
+		
+		ObjectMapper om = new ObjectMapper();
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		om.setDateFormat(sdf);
+		//잭슨은 그냥하면 밀리세컨을 가져온다 그래서 위의설정.
+		
+		String strJson = null;
+		try {
+			strJson = om.writeValueAsString(list);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		return strJson;
+	}
 	
 	
 	

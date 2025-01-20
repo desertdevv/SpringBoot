@@ -40,6 +40,32 @@
 						
 							<button class="w-100 btn btn-dark btn-lg" type="button" onclick="javascript:history.back();">BACK</button>
 							
+							<br>
+							
+							<div class="input-group">
+								<span class="input-group-text">REPLAY<br>CONTENT</span>
+								<textarea class="form-control" rows="3" id="replyContent" style="resize:none;"></textarea>
+								<button class="btn btn-outline-success btn-lg" id="replySubmit" type="button" th:disabled="${session.loginUser == null}">SUBMIT</button>
+							</div>
+							
+							<br>
+							
+							<table class="table">
+								<thead>
+									<tr>
+										<th width="130px">작성자</th>
+										<th>작성내용</th>
+										<th width="130px">작성일자</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr th:each="r:${list}">
+										<td>[[${r.nickName}]]</td>
+										<td th:text="${r.replyContent}"></td>
+										<td>[[${r.replyModifyDate}]]</td>
+									</tr>
+								</tbody>
+							</table>
 					</div>
 				</form>
 			</div>
@@ -64,7 +90,7 @@
 	  		</div>
 		</div>		
 	</div>
-	<script>
+	<script th:inline="javascript">
 		window.onload =()=>{
 			const upd = document.getElementById('updateForm');
 			const form = document.getElementById('detailForm');
@@ -74,19 +100,55 @@
 					form.submit();
 				});
 			}
-			
-			document.getElementById('deleteModal').addEventListener('click',()=>{
-				$('#modalChoice').modal('show');
-			});
-			
+			const deleteModal = document.getElementById('deleteModal');
+			if(deleteModal != null){}
+				deleteModal.addEventListener('click',()=>{
+					$('#modalChoice').modal('show');
+				});
+			}
 			
 			document.getElementById('delete').addEventListener('click',()=>{
 				form.action = '/board/delete' ;
 				form.submit();
 			});
 			
-			
-		}
+			/*<![CDATA[*/
+			document.getElementById('replySubmit').addEventListener('click',()=>{
+				$.ajax({
+					url: '/board/rinsert',
+					dateType:'json',
+					data: {
+						replyContent:document.getElementById('replyContent').value,
+						refBoardId:/*[[${b.boardId}]]*/1,
+						replyWriter:/*[[${session.loginUser != null ? session.loginUser.id : ''}]]*/'user01'
+								
+					},
+					success: data =>{
+// 						console.log(data);
+						const tbody = document.querySelector('tbody');
+						tbody.innerHTML = '';
+						for(const r of data){
+							const tr = document.createElement('tr');
+							
+							const writerTd = document.createElement('td');
+							const writerVal = document.createTextNode(r.nickName);
+							writerTd.append(writerVal);
+							
+							const contentTd= document.createElement('td');
+							contentTd.innerText = r.replyContent;
+							
+							tr.append(writerTd);
+							tr.append(contentTd);
+							tr.innerHTML += '<td>' + r.replyModifyDate + '</td>';
+							
+							tbody.append(tr);
+						}
+						document.getElementById('replyContent').value='';
+					},
+					error: data => console.log(data)
+				});
+			})
+			/*]]>*/
 	</script>
 </body>
 </html>
