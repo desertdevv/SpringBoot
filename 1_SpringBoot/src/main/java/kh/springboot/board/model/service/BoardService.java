@@ -112,6 +112,10 @@ public class BoardService {
 
 	public int insertReply(Reply r) {
 		return mapper.insertReply(r);
+	}
+
+	public int deleteReply(int rId) {
+		return mapper.deleteReply(rId);
 	}	
 	
 	

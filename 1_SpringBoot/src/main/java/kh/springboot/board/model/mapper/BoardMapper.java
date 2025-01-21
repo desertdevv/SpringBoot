@@ -45,6 +45,8 @@ public interface BoardMapper {
 
 	int insertReply(Reply r);
 
+	int deleteReply(int rId);
+
 
 	
 	

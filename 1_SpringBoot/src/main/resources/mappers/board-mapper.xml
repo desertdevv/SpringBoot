@@ -144,7 +144,10 @@ selectKey 적용 시키기
 		values (seq_rid.nextval,#{replyContent},#{refBoardId},#{replyWriter},sysdate,sysdate,default)
 	</insert>
 
-
+	<delete id="deleteReply">
+		delete from reply
+		where reply_id = #{rId}
+	</delete>
 
 
 

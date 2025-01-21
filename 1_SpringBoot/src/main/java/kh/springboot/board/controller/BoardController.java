@@ -345,6 +345,14 @@ public class BoardController {
 	}
 	
 	
+	@GetMapping("rdelete")
+	@ResponseBody
+	public int deleteReply(@RequestParam("rId") int rId){
+		return bService.deleteReply(rId);
+
+		
+	}
+	
 	
 	
 }
