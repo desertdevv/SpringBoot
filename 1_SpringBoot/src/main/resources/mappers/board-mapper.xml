@@ -148,6 +148,12 @@ selectKey 적용 시키기
 		delete from reply
 		where reply_id = #{rId}
 	</delete>
+	
+	<update id="updateReply">
+		update reply
+		set reply_content = #{replyContent}
+		where reply_id = #{replyId}
+	</update>
 
 
 

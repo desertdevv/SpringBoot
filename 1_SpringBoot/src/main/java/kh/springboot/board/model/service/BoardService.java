@@ -116,8 +116,15 @@ public class BoardService {
 
 	public int deleteReply(int rId) {
 		return mapper.deleteReply(rId);
-	}	
-	
+	}
+
+	public int updateReply(Reply r) {
+		return mapper.updateReply(r);
+	}
+
+
+
+
 	
 	
 	

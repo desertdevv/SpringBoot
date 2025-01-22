@@ -18,6 +18,7 @@
          <div class="bd-example">
             <table class="table table-hover">
                <thead>
+               
                   <tr>
                      <th width="80px">글 번호</th>
                      <th>글 제목</th>
@@ -26,6 +27,7 @@
                      <th width="80px">조회수</th>
                       </tr>
                    </thead>
+                   
                   <tbody> 
                       <tr th:each="b : ${list}" >
                             <td th:text="${b.boardId}"></td>
@@ -34,8 +36,8 @@
                             <td th:text="${#strings.arraySplit(b.createDate, ' ')[0]}"></td>
                             <td th:text="${b.boardCount}"></td>
                         </tr>
-
                    </tbody>
+                   
               </table>
              </div>
       </div>
@@ -52,7 +54,7 @@
                
 <!--                페이지숫자 -->
                <li class="page-item" th:each="p :${#numbers.sequence(pi.startPage, pi.endPage)}">
-               	<a class="page-link" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
+               	 <a class="page-link" th:href="@{${loc}(page=${p})}">[[${p}]]</a>
                </li>
                
                
@@ -62,6 +64,7 @@
                      <span aria-hidden="true">&raquo;</span>
                   </a>
                </li>
+               
           </ul>
         </nav>
       <!-- 로그인 했을 때만 버튼 보이게 -->      
