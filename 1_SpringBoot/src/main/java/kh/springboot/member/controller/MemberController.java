@@ -287,7 +287,7 @@ public class MemberController {
 	
 	@GetMapping("logout")
 	public String logout(SessionStatus session) {
-		session.setComplete();
+		session.setComplete();  
 		return "redirect:/home";
 	}
 	
