@@ -35,7 +35,7 @@ selectKey 적용 시키기
 		insert into board
 		values (#{boardId}, #{boardTitle}, #{boardWriter}, #{boardContent},default,sysdate,sysdate,default,#{boardType})
 	</insert>
-
+ 
 	<select id="selectBoard">
 		select *
 		from board
