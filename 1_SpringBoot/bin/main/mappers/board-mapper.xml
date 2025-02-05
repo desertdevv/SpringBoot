@@ -43,7 +43,7 @@ selectKey 적용 시키기
 		where board_status = 'Y' and board_id = #{bId}
 <!-- 		'Y'를 추가안해주면 url을타고 삭제된걸 볼수가있어서 넣어준다. -->
 	</select>
-
+  
 	<update id="updateCount">
 		update board
 		set board_count = board_count +1
