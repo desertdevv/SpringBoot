@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="sidebar">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+	.bi {display: inline-block; width: 1rem; height: 1rem;}
+
+	/* Sidebar */
+	@media (min-width: 768px) {
+		.sidebar {min-height: 100vh;}
+		.sidebar .offcanvas-lg {position: -webkit-sticky; position: sticky; top: 48px;}
+		.navbar-search {display: block;}
+	}
+	.sidebar .nav-link {font-size: .875rem; font-weight: 500;}
+	.sidebar .nav-link.active {color: #2470dc;}
+	.sidebar-heading {font-size: .75rem;}
+</style>
+</head>
+<body>
+	<div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
+		<div class="offcanvas-lg offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+			<div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
+				<ul class="nav flex-column">
+					<li class="nav-item">
+						<a class="nav-link d-flex align-items-center gap-2 active" aria-current="page" href="admin.adm"> 
+							<svg class="bi">
+								<use xlink:href="#house-fill" />
+							</svg> Dashboard
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link d-flex align-items-center gap-2" href="members.adm"> 
+							<svg class="bi">
+								<use xlink:href="#people" />
+							</svg> Members
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link d-flex align-items-center gap-2" href="boards.adm">
+							<svg class="bi">
+								<use xlink:href="#file-earmark-text" />
+							</svg> General Board
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link d-flex align-items-center gap-2" href="attms.adm">
+							<svg class="bi">
+								<use xlink:href="#puzzle" />
+							</svg> Attachment Board
+						</a>
+					</li>
+				</ul>
+
+				<hr class="my-3">
+
+				<ul class="nav flex-column mb-auto">
+					<li class="nav-item">
+						<a class="nav-link d-flex align-items-center gap-2" href="logout.me"> 
+							<svg class="bi">
+								<use xlink:href="#door-closed" />
+							</svg> Sign out
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+	<include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+	<!-- appender : 어디에 출력되게 할건지 결정
+		ConsoleAppender, JDBCAppender,FIleAppender,RollingFileAppender
+													-FileAppender를 보완한 개념
+														일정 조건 후 기존파일을 백업파일로 바꾸고 다시 처음부터 시작
+	  -->
+	
+	<root level="INFO">
+		<appender-ref ref="CONSOLE"/>
+	</root>
+	
+	<!-- root logger
+		모든 자식 logger들의 로깅 출력을 rootlogger를 통해 이루어짐
+	  -->
+	  
+	  
+	  
+	  
+	  
+	  
+	  
+	  <appender class="ch.qos.logback.core.ConsoleAppender" name="myConsoleAppender">
+	  	<layout class="ch.qos.logback.classic.PatternLayout">
+	  		<pattern>%d{yyyy-MM-dd HH:mm:ss:SSSS} %-5p %c.%M - %m%n</pattern>
+<!-- 	layout : 로그를 어떤 형식으로 출력할지 결정 
+			%p		debug,info,warn,error,fatal 등의 priority 출력
+			%m		로그 내용 출력
+			%d		로깅 이벤트가 발생한 시간 출력(프로그램의 실행속도를 느리게함)
+					포맷을 %d{HH:mm:ss,SSS}와 같은 형태로 사용하며 SimpeDateFormat에 따른 포맷팅을 하면됨
+			%t		로그이벤트가 발생된 스레드 이름 출력
+			%%		%출력
+			%n		개행문자 출력
+			%c		package 출력
+			%c{n}	n만큼의 pakage를 가장 하단부터 역으로 출력(a.b.c 에서 %c{2}면 b.c)
+			%C		호출자의 클래스 명 출력
+			%F		로깅이 발생한 프로그램 파일명 출력
+			%I		로깅이 발생한 caller의 정보 출력
+			%L		로깅이 발생한 caller의 라인 수 출력
+			%M		로깅이 발생한 method 이름 출력
+			%r		애플리케이션 시작 이후부터 로깅이 발생한 시점의 시간(millisecond)출력
+-->
+
+	  	</layout>
+	  </appender>
+	  
+	  <appender name="myFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	  
+		  	<!-- 파일 경로 설정 -->
+		  	<file>D:/logs/member/login.log</file>
+		  	
+		  	<!-- 출력 패턴 설정 -->
+		  	<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+		  		<pattern>%d{yy-MM-dd HH:mm:ss} [%p] %c{1}.%M>%L - %m%n</pattern>
+		  	</encoder>
+		  	
+		  	<!-- Rolling 중에서도 TimeBased 정책 선택 : 시간에 따라 = Daily -->
+		  	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		  		<fileNamePattern>D:/logs/member/login.log.%d{yyyyMMdd}</fileNamePattern>
+		  	</rollingPolicy>
+	  	
+	  </appender>
+	  
+	  <logger name="kh.springboot.member.controller.MemberController" level="debug" additivity="false">
+	  		<appender-ref ref="myConsoleAppender"/>
+<!-- 	  		<appender-ref ref="myFileAppender"/> -->
+	  </logger>
+	  
+	  <logger name="kh.springboot.common.interceptor.LoginInterceptor" level="debug" additivity="false">
+	  		<appender-ref ref="myFileAppender"/>
+	  </logger>
+	  
+	   
+</configuration>

@@ -38,6 +38,21 @@ public class TemplateResolverConfig {
 		return mResolver;
 	}
 	
+	@Bean
+	public ClassLoaderTemplateResolver adminResolver() {
+		ClassLoaderTemplateResolver aResolver = new ClassLoaderTemplateResolver();
+		aResolver.setPrefix("templates/views/admin/");
+		//원래는 "templates/" 가 기본경로인데 여기에 views를 추가.
+		aResolver.setSuffix(".html");
+		aResolver.setTemplateMode(TemplateMode.HTML);
+		aResolver.setCharacterEncoding("UTF-8");
+		aResolver.setCacheable(false);
+		//서버껏다켯다
+		aResolver.setCheckExistence(true);
+		// 제일 중요한 설정. 얘를 넣어주면 자동으로 돌아가면서 찾아준다. 그래서 밖에있는 home도 위치를 찾아준다.
+		return aResolver;
+	}
+	
 
 
 
