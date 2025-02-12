@@ -15,11 +15,28 @@
 	<main>
 		<!-- common/navbar.html 삽입 -->
 		
-		<div th:replace="views/common/navbar.html"></div>
+		<div th:replace="~{views/common/navbar.html}"></div>
 		
 		<div class="container py-4">
 			<div class="p-5 mb-4 bg-light rounded-3">
 				<div class="container-fluid py-5">
+				
+					<div data-bs-toggle="dropdown" style="width:100px; height:100px; float: left; margin-right: 50px; border: 2px dashed black; border-radius: 50%; overflow: hidden; cursor: pointer;">
+						<th:block th:if="${session.loginUser.profile==null}">
+							<img src="/image/no_image.png" width="100%" height="100%">
+						</th:block>
+						<th:block th:if="${session.loginUser.profile!=null}">
+							<img th:src="@{/}+${session.loginUser.profile}" width="100%" height="100%">
+						</th:block>
+					</div>
+					
+					<input type="file" accept="image/*" style="display: none;" onchange="loadImage(this);">
+					
+					<ul class="dropdown-menu dropdown-menu-end shadow">
+						<li><button class="dropdown-item">프로필 변경하기</button></li>
+						<li><button class="dropdown-item">프로필 삭제하기</button></li>
+					</ul>
+					
 					<h1 class="display-5 fw-bold">
 						<abbr title="if you click this, you can go main page(/home).">
 							<a href="/home">[[${session.loginUser.nickName}]]'s Information</a>
@@ -167,7 +184,65 @@
 			document.getElementById('delete').addEventListener('click', ()=>{
 				$('#modalChoice').modal('show');	
 			});
+			
+			
+			
+			
+// 			document.querySelector('.container-fluid.py-5>div').addEventListener('click',()=>{
+// 				document.querySelector('input[type=file]').click();
+// 			})
+			
+			document.querySelector('.dropdown-menu>li:first-child').addEventListener('click',()=>{
+				document.querySelector('input[type=file]').click();
+			})
+			
+			document.querySelector('.dropdown-menu>li:last-child').addEventListener('click',()=>{
+				loadImage();
+			})
+			
 		}
+		
+		const loadImage= file=>{
+// 			console.log(file);
+
+
+			// 프로필 preview
+			let imgFile = null;
+			if(file != undefined){
+				const reader = new FileReader();
+				reader.addEventListener('load',function(){
+					file.previousElementSibling.children[0].src=this.result;
+				});
+				imgFile = file.files[0];
+				reader.readAsDataURL(imgFile);
+			}
+			// 프로필 서버에 넘기기
+			const formData = new FormData();
+			formData.append('profile', imgFile);
+			$.ajax({
+				url:'/member/profile',
+				data: formData,
+				type: 'post',
+				processData: false, // data 를 String으로 변환하냐 여부
+				contentType : false, // 전달하는 데이터 형식(false : 설정하지않음 ture:  application/x-www=form-urlencoded)
+				success: data =>{
+// 					console.log(data);
+					if(data != 1){
+						alert('프로필 변경을 실패하였습니다.')
+						location.reload();
+					}
+					if(imgFile == null){
+						document.querySelector('.container-fluid.py-5 img').src='/image/no_image.png';
+					}
+				},
+				error: data=>console.log(data)
+			})	
+			
+		}
+		
+		
+		
+		
 	</script>
 </body>
 </html>

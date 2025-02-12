@@ -1,10 +1,12 @@
 package kh.springboot.member.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import jakarta.servlet.http.HttpSession;
@@ -27,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @Controller
-@RequiredArgsConstructor//를해서 맴버 컨트롤러에 대한 객체 생성
+@RequiredArgsConstructor //를해서 맴버 컨트롤러에 대한 객체 생성
 @SessionAttributes("loginUser")
 @RequestMapping("/member/")
 @Slf4j
@@ -387,11 +390,7 @@ public class MemberController {
 			HashMap<String,String> map = new HashMap<String,String>();
 			map.put("id", m.getId());
 			map.put("newPwd", bcrypt.encode(newPwd));
-			
-			
 			int result = mService.updatePassword(map);
-			
-			
 			if(result>0) {
 				model.addAttribute("loginUser",mService.login(m));
 				return "redirect:/home";
@@ -402,8 +401,6 @@ public class MemberController {
 		}else {
 			throw new MemberException("비밀번호수정시랲 ㅋㅋ");
 		}
-		
-		
 	}
 	
 
@@ -443,5 +440,51 @@ public class MemberController {
 		int count = mService.checkValue(map);
 		return count;
 	}
+
+	
+	@PostMapping("profile")
+	@ResponseBody
+	public int updateProfile(@RequestParam(value="profile", required=false) MultipartFile profile,Model model) {
+		Member m = (Member)model.getAttribute("loginUser");
+		
+		String savaPath = "c:\\profiles";
+		File folder = new File(savaPath);
+		
+		if(!folder.exists()) {
+			folder.mkdirs();
+		}
+		
+		if(m.getProfile() != null) {
+			File f = new File(savaPath + "\\" + m.getProfile());
+			f.delete();
+		}
+		
+		String renameFilename = null;
+		if(profile!=null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+			int ranNum = (int)(Math.random()*100000);
+			String originalFilename = profile.getOriginalFilename();
+			renameFilename = sdf.format(new Date()) + ranNum + originalFilename.substring(originalFilename.lastIndexOf("."));
+			
+			try {
+				profile.transferTo(new File(folder + "\\" + renameFilename));
+			} catch (IllegalStateException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		HashMap<String, String> map = new HashMap<String,String>();
+		map.put("id",m.getId());
+		map.put("profile", renameFilename);
+		
+		int result = mService.updateProfile(map);
+		if(result > 0) {
+			m.setProfile(renameFilename);
+			model.addAttribute("loginUser",m);
+		}
+		
+		return result;
+	}
 	
 }
+

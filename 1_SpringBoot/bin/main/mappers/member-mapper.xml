@@ -91,6 +91,13 @@
 		select count(*)
 		from member
 		where ${column} = #{value}
-	</select>	
+	</select>
+	
+	<update id = "updateProfile">
+		update member
+		set profile = #{profile}
+		where id = #{id}
+	
+	</update>
 	
 </mapper>

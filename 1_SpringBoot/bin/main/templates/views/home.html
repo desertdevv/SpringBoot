@@ -11,7 +11,7 @@
 		<!-- common/navbar.html 삽입 -->
 <!-- 		삽입1) th:replace 해당 태그ㅐ 자리에 내가 가져올걸 불러옴 (우리가본 예시 div가 없음) -->
 <!-- 		2) th:insert 해당 태그에 그 내용을 그냥 집어넣음(우리가 본 예시 div가 있음) -->
-		<div th:replace="views/common/navbar.html"></div>
+		<div th:replace="~{views/common/navbar.html}"></div>
 		
 		
 		<div class="container py-4">

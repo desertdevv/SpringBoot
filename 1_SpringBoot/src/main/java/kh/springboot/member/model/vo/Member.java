@@ -28,4 +28,5 @@ public class Member {
 	private Date updateDate;
 	private String memberStatus;
 	private String isAdmin;
+	private String profile;
 }
