@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +23,8 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpSession;
 import kh.springboot.member.model.exception.MemberException;
 import kh.springboot.member.model.service.MemberService;
@@ -50,6 +54,8 @@ public class MemberController {
 	
 //	private Logger log = LoggerFactory.getLogger(MemberController.class);
 	
+	
+	private final JavaMailSender mailSender;
 	
 	
 	// 로그인 화면 연결
@@ -485,6 +491,98 @@ public class MemberController {
 		
 		return result;
 	}
+	
+	
+	@GetMapping("echeck")
+	@ResponseBody
+	public String checkEmail(@RequestParam("email") String email) {
+		MimeMessage mimeMassage = mailSender.createMimeMessage();
+		
+		String subject = "[SpringBoot] 이메일 확인";
+		String body = "<h1 align='center'>SpringBoot 이메일 확인</h1><br>";
+		body += "<div style='border:3px solid green; text-align: center; font-size: 15px;'>본 메일은 이메일을 확인하기 위해 발송되었습니다.<br>";
+		body += "아래 숫자를 인증번호 확인란에 작성하여 확인해주시기 바랍니다.<br><br>";
+		
+		String random = "";
+		for(int i=0; i<5; i++) {
+			random += (int)(Math.random() * 10);
+		}
+		
+		body += "<span style='font-size; 30px; text-decoration: underline;'><b>" + random + "</b></span><br></div>";
+		
+		MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMassage);
+		
+		try {
+			mimeMessageHelper.setTo(email);
+			mimeMessageHelper.setSubject(subject);
+			mimeMessageHelper.setText(body,true);
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+		mailSender.send(mimeMassage);
+		
+		return random;
+	}
+	
+	@GetMapping("findIDPW")
+	public String findIDPW() {
+		return "findIDPW";
+	}
+	
+//	@PostMapping("fid")
+//	public String findId(@ModelAttribute Member m, Model model) {
+//		String id = mService.findId(m);
+//		if(id != null) {
+//			model.addAttribute("id",id);
+//			return "findId";
+//		}else {
+//			throw new MemberException("존재하지않는 아이디입니다다");
+//		}
+//		
+//	}
+//	
+//	@PostMapping("fpw")
+//	public String findPw(@ModelAttribute Member m) {
+//		Member member = mService.findPw(m);
+//		if(member !=null) {
+//			return "resetPw";
+//		}else {
+//			throw new MemberException("존재하지않는 회원입니다");
+//		}
+//		
+//	}
+	
+	//위에 두개를 합치자.
+	@PostMapping("fInfo")
+	public String findId(@ModelAttribute Member m, Model model) {
+		Member member = mService.findInfo(m);
+		if(member != null) {
+			model.addAttribute("id",member.getId()); // findId.html에 보내는 용도
+			return m.getName() != null ? "findId" : "resetPw";
+		}else {
+			throw new MemberException("존재하지않는 아이디입니다다");
+		}
+		
+	}
+	
+	@PostMapping("fpwUpdate")
+	public String updatePwd(@ModelAttribute Member m, Model model) {
+		HashMap<String, String> map = new HashMap<String,String>();
+		map.put("id", m.getId());
+		map.put("newPwd", bcrypt.encode(m.getPwd()));
+		int result = mService.updatePassword(map);  	// updatePwd재활용
+		
+		if(result>0) {
+			model.addAttribute("msg", "비밀번호 수정이 완료되었습니다.");
+			model.addAttribute("url", "/home");
+			return "views/common/sendRedirect";
+		}else {
+			throw new MemberException("비밀번호 수정실패.");
+		}
+	}
+	
+	
+	
 	
 }
 

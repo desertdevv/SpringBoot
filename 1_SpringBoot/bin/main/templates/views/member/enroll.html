@@ -50,12 +50,21 @@
 							<div class="input-group">
 								<input type="text" class="form-control" id="emailId" name="emailId">
 								<span class="input-group-text">@</span>
-								<select name="emailDomain" style="width: 280px;">
+								<select name="emailDomain" style="width: 200px;">
 									<option>naver.com</option>
 									<option>gmail.com</option>
 									<option>nate.com</option>
 									<option>hanmail.net</option>
 								</select>
+								<button type="button" class="btn btn-outline-success" id="sendEmail">인증번호</button>
+							</div>
+						</div>
+						
+						<div class="col-12" style="display:none;">
+							<label class="form-label">EMAIL CONFIRM</label>
+							<div class="input-group">
+								<input type="text" class="form-control">
+								<button type="button" class="w-25 btn btn-outline-success" id="verifyBtn">인증번호 확인</button>
 							</div>
 						</div>
 						
@@ -100,6 +109,53 @@
 			document.getElementById('nickName').addEventListener('change',function(){
 				checkValue(this);
 			});					
+			
+			
+			//인증번호 버튼을 누르면 이벤트발생
+			//이메일 아이디가 입력되지 않으면 ' 이메일이 입력되지않았습니다'라는 알림과 함께 이메일 아이디 쪽으로 커서 이동
+			// 이메일 아이디가 입력됐으면 /member/echeck로 이메일을 전달하는 비동기 통신 작성
+			
+			
+			let confirmData = '';
+			document.getElementById('sendEmail').addEventListener('click',function(){
+				const emailId = document.querySelector('#emailId').value.trim();
+				if(emailId==''){
+					alert('이메일이 입력되지않았습니다.')
+					document.querySelector('#emailId').focus();
+				}else{
+					$.ajax({
+						url:'/member/echeck',
+						data:{email:emailId + '@' + document.querySelector('select[name=emailDomain]').value},
+						success: data =>{
+// 							console.log(data)
+							alert('성공적으로 메일이 전송 되었습니다')
+							const confirmDiv = $(this).parent().parent().next();
+							$(confirmDiv).slideDown();
+							confirmData = data;
+						},
+						error: data=> console.log(data)
+					})
+				}
+			})
+			
+			document.getElementById('verifyBtn').addEventListener('click',function(){
+				const verifyNum = this.previousElementSibling;
+				if(verifyNum.value.trim()==''){
+					alert('인증번호를 입력해주세요.');
+					verifyNum.foucs();
+				}else if(confirmData == ''){
+					alert('이메일 인증을 먼저 진행해 주세요.');
+				}else{
+					if(verifyNum.value.trim() == confirmData){
+						alert('이메일이 확인되었습니다.');
+						verifyNum.disabled = true;
+						this.disabled = true;
+					}else{
+						alert('인증번호가 일치하지 않습니다.');
+					}
+				}
+			})
+			
 		}
 		
 		const checkValue = obj =>{
@@ -114,7 +170,7 @@
 					success: data =>{
 							console.log(data, typeof data);
 						if(data =='0'){
-							resultLable.innerText = 'YOU can use this ' + obj.id + '.';
+							resultLable.innerText = 'You can use this ' + obj.id + '.';
 							resultLable.style.color= 'green';
 						}else{
 							resultLable.innerText = "You cant use this " +obj.id +".";

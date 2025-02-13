@@ -100,4 +100,29 @@
 	
 	</update>
 	
+<!-- 	<select id="findId"> -->
+<!--         select id  -->
+<!--         from member  -->
+<!--         where name = #{name} and email = #{email} and member_status='Y' -->
+<!--     </select> -->
+    
+<!--     <select id="findPw"> -->
+<!--     	select * -->
+<!--     	from member -->
+<!--     	where email=#{email} and id=#{id} and member_status='Y' -->
+<!--     </select> -->
+    
+    <select id="findInfo" resultType="Member">
+    	select *
+    	from member
+    	where member_status='Y'
+    	<if test= "name !=null">
+    		and email=#{email} and name=#{name}
+    	</if>
+    	<if test= "name == null">
+    		and email=#{email} and id=#{id}
+    	</if>
+    </select>
+    
+	
 </mapper>
