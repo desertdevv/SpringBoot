@@ -9,6 +9,12 @@
 	abbr>a{color: black; text-decoration: none;}
 	#delete{color: lightgray;}
 	#delete:hover{color: gray; cursor: pointer;}
+	
+	input[type=checkbox]{font-size: 1.375em;}
+	label button{border: none; background: none;}
+	span~button{margin: 0 0 0 auto;}
+	
+	
 </style>
 </head>
 <body>
@@ -18,8 +24,8 @@
 		<div th:replace="~{views/common/navbar.html}"></div>
 		
 		<div class="container py-4">
-			<div class="p-5 mb-4 bg-light rounded-3">
-				<div class="container-fluid py-5">
+			<div class="p-5 mb-4 bg-light rounded-3" style="display : flex;">
+				<div class="container-fluid py-5" style="height: 100%; width: 65%; display: inline-block;">
 				
 					<div data-bs-toggle="dropdown" style="width:100px; height:100px; float: left; margin-right: 50px; border: 2px dashed black; border-radius: 50%; overflow: hidden; cursor: pointer;">
 						<th:block th:if="${session.loginUser.profile==null}">
@@ -44,6 +50,42 @@
 					</h1>
 					<label id="delete">> 탈퇴하기</label>
 				</div>
+				
+				
+				<div style="width: 33%; display: inline-block;">
+					<h3><abbr title="Click this to slide the list down or up.">todo list</abbr></h3>
+					<hr>
+					<div class="list-group">
+						<span id="todo-body">
+							<label class="list-group-item d-flex gap-3" th:each="l:${todoList}"> 
+								<input class="form-check-input" type="checkbox" th:checked="${l.status == 'C'}">
+								<button type="button" th:style="|border: none; background: none; ${l.status == 'C' ? 'color: lightgray;' : ''}|">
+									<svg th:if="${l.important == 'N'}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16">
+										<path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z"/>
+									</svg>
+									
+									<svg th:if="${l.important == 'Y'}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gold" class="bi bi-star-fill" viewBox="0 0 16 16">
+										<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+									</svg>
+								</button>
+								<span class="pt-1" th:style="${l.status == 'C' ? 'text-decoration: line-through; color: lightgray;' : ''}">[[${l.todo}]]</span>
+								<button type="button">x</button>
+							</label>
+
+						</span>
+						<label class="list-group-item d-flex gap-3">
+							<button type="button" class="btn btn-outline-secondary btn-sm" id="addTask">+</button>
+							<input type="text" placeholder="Add new task..." style="border: none; outline: none;">
+						</label>
+					</div>
+				</div>				
+				
+				
+				
+				
+				
+				
+				
 			</div>
 
 			<div class="row align-items-md-stretch">
@@ -199,6 +241,88 @@
 			document.querySelector('.dropdown-menu>li:last-child').addEventListener('click',()=>{
 				loadImage();
 			})
+			
+			
+			document.querySelector('div>h3').addEventListener('mouseenter',function(){
+				this.style.fontWeight = 'bold';
+			})
+			
+			document.querySelector('div>h3').addEventListener('mouseleave',function(){
+				this.style.fontWeight = 'nomal';
+			})			
+			
+			document.querySelector('div>h3').addEventListener('click',function(){
+				$('#todo-body').slideToggle();
+			});
+			
+			[...document.querySelectorAll('span~button')].map((x, index, array)=>{
+// 				console.log(x);
+				x.addEventListener('mouseover',function(){
+					this.style.fontWeight = 'bold';
+				});
+				
+				x.addEventListener('mouseleave',function(){
+					this.style.fontWeight = 'nomal';
+				});
+				
+				x.addEventListener('click',function(){
+				});
+				
+			});
+			
+			
+			document.getElementById('addTask').addEventListener('click',function(){
+				const todo = this.nextElementSibling;
+				const todoValue = todo.value.trim();
+				if(todoValue == ''){
+					alert('할일을 적어주세요.');
+					todo.focus();
+				}else{
+					$.ajax({
+						url: '/member/linsert',
+						data: {todo:todoValue, writer:loginUser.id},
+						success: data =>{
+							//console.log(data)
+							if(data==1){
+								const label = document.createElement('label');
+								label.classList.add('list-group-item', 'd-flex','gap-3');
+								
+								const input = document.createElement('input');
+								input.setAttribute('type','checkbox');
+								input.setAttribute('class', 'form-check-input');
+								
+								const important = document.createElement('button');
+								important.setAttribute('type','button');
+								important.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16"><path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z"/></svg>';
+								
+								
+								const span = document.createElement('span');
+								span.setAttribute('class', 'pt-1');
+								span.innerText = todoValue;
+								
+								label.append(input);
+								label.append(important);
+								label.append(span);
+								label.innerHTML += '<button type="button">x</button>';
+								
+								const todoBody = document.querySelector('#todo-body');
+								todoBody.append(label);
+								
+								if(todoBody.style.display =='none'){
+									$(todoBody).slideDown();
+								}
+								
+								todo.value= '';
+								
+							}else{
+								alert('할일 추가 중 오류가 발생하였습니다.');
+							}
+						},
+						error: data => console.log(data)
+					});
+				}
+			})
+
 			
 		}
 		

@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpSession;
 import kh.springboot.member.model.exception.MemberException;
 import kh.springboot.member.model.service.MemberService;
 import kh.springboot.member.model.vo.Member;
+import kh.springboot.member.model.vo.TodoList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -271,7 +272,10 @@ public class MemberController {
 			
 			ArrayList<HashMap<String,Object>> list = mService.selectMyList(id);
 //			System.out.println(list);
-			mv.addObject("list",list);
+			
+			ArrayList<TodoList> todoList = mService.selectTodoList(id);
+			
+			mv.addObject("list",list).addObject("todoList",todoList);
 			mv.setViewName("myInfo");			
 		}
 		
@@ -579,6 +583,12 @@ public class MemberController {
 		}else {
 			throw new MemberException("비밀번호 수정실패.");
 		}
+	}
+	
+	@GetMapping("linsert")
+	@ResponseBody
+	public int insertTodo(@ModelAttribute TodoList todo) {
+		return mService.insertTodo(todo);
 	}
 	
 	

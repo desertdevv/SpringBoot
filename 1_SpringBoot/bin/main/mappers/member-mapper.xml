@@ -124,5 +124,17 @@
     	</if>
     </select>
     
+    <select id="selectTodoList" resultType="TodoList">
+    	select *
+    	from todo_list
+    	where writer= #{id}
+    	order by todo_num
+    </select>
+    
+    <insert id ="insertTodo">
+    	insert into todo_list
+    	values(seq_lid.nextval, #{todo}, #{writer}, default, default)
+    </insert>
+    
 	
 </mapper>
