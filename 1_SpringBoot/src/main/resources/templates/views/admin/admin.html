@@ -40,7 +40,12 @@
 									<th>Date</th>
 									<th>Views</th>
 								</tr>
-								<tr> 
+								<tr th:each="b:${list}" th:if="${b.boardType == 1}"> 
+									<td th:text="${b.boardId}"></td>
+									<td>[[${b.boardTitle}]]</td>
+									<td th:text="${b.nickName}"></td>
+									<td>[[${b.createDate}]]</td>
+									<td th:text="${b.boardCount}"></td>
 								</tr>
 							</table>
 						</div>
@@ -56,7 +61,12 @@
 									<th>Date</th>
 									<th>Views</th>
 								</tr>
-								<tr>
+								<tr th:each="b:${list}" th:if="${b.boardType == 2}"> 
+									<td th:text="${b.boardId}"></td>
+									<td>[[${b.boardTitle}]]</td>
+									<td th:text="${b.nickName}"></td>
+									<td>[[${b.createDate}]]</td>
+									<td th:text="${b.boardCount}"></td>
 								</tr>
 							</table>
 						</div>
@@ -67,36 +77,95 @@
 	</div>
 	
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js" integrity="sha384-gdQErvCNWvHQZj6XZM0dNsAoY4v+j5P1XDpNkcM3HJG1Yx04ecqIHk7+4VBOCHOG" crossorigin="anonymous"></script>
-    <script>
-		/* globals Chart:false */
+    <script th:inline="javascript">
+    	const getDateFormat = date =>{
+    		const year = (date.getFullYear() + "").slice(-2);
+    		const month = ('0'+(date.getMonth()+1)).slice(-2);
+    		const day = ('0'+date.getDate()).slice(-2);
+    		
+    		return year + '-' + month + '-' + day; 
+    	}
+    	
+    	const today = new Date();
+    	const getThatDays = n =>{
+			return new Date(new Date().setDate(today.getDate()-n));
 
-		(() => {
-			'use strict'
+    	}
+    	
 
-			// Graphs
+		/*<![CDATA*/const data = /*[[${dateCount}]]*/null;/*]]>*/
+		window.onload = () =>{
+			console.log(data);
+// 			console.log(data[getDateFormat(today)]);
+			sevenDays();
+			allDays();
+		}
+		
+		const allDays =()=>{
+			const dates = [];
+			const counts = [];
+			
+			for(const key in data){
+				dates.push(key);
+				counts.push(data[key]);
+			}
+			
+// 			console.log(dates);
+// 			console.log(counts);
+			
+			
+			const ctx = document.getElementById('allDays')
+			
+			const myChart = new Chart(ctx, {
+				type: 'line',
+				data: {
+					labels: dates,
+					datasets: [{
+						data:counts,
+						lineTension: 0,
+						backgroundColor: 'transparent',
+						borderColor: '#007bff',
+						borderWidth: 4,
+						pointBackgroundColor: '#007bff'
+					}]
+				},
+				options: {
+					plugins: {
+						legend: {
+							display: false
+						},
+						tooltip: {
+							boxPadding: 3
+						}
+					}
+				}
+			})
+		}
+		
+		
+		const sevenDays = () => {
 			const ctx = document.getElementById('sevenDays')
-			// eslint-disable-next-line no-unused-vars
 			const myChart = new Chart(ctx, {
 				type: 'line',
 				data: {
 					labels: [
-						'Sunday',
-						'Monday',
-						'Tuesday',
-						'Wednesday',
-						'Thursday',
-						'Friday',
-						'Saturday'
+						getDateFormat(getThatDays(6)),
+						getDateFormat(getThatDays(5)),
+						getDateFormat(getThatDays(4)),
+						getDateFormat(getThatDays(3)),
+						getDateFormat(getThatDays(2)),
+						getDateFormat(getThatDays(1)),
+						getDateFormat(today)
 					],
 					datasets: [{
 						data: [
-							15339,
-							21345,
-							18483,
-							24003,
-							23489,
-							24092,
-							12034
+							data[getDateFormat(getThatDays(6))] == undefined ? 0 : data[getDateFormat(getThatDays(6))],
+							data[getDateFormat(getThatDays(5))] == undefined ? 0 : data[getDateFormat(getThatDays(5))],
+							data[getDateFormat(getThatDays(4))] == undefined ? 0 : data[getDateFormat(getThatDays(4))],
+							data[getDateFormat(getThatDays(3))] == undefined ? 0 : data[getDateFormat(getThatDays(3))],
+							data[getDateFormat(getThatDays(2))] == undefined ? 0 : data[getDateFormat(getThatDays(2))],
+							data[getDateFormat(getThatDays(1))] == undefined ? 0 : data[getDateFormat(getThatDays(1))],
+							data[getDateFormat(today)] == undefined ? 0 : data[getDateFormat(today)]
 						],
 						lineTension: 0,
 						backgroundColor: 'transparent',
@@ -116,7 +185,8 @@
 					}
 				}
 			})
-		})();
+			
+		}
 	</script>
 </body>
 </html>
