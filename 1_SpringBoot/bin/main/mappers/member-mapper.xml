@@ -151,5 +151,15 @@
     	delete from todo_list
     	where todo_num = #{num}
     </delete>
+    
+    <select id="selectMembers" resultType="Member">
+    	select * from member
+    </select>
+    
+    <update id="updateMemberItem">
+    	update member
+    	set ${col}=#{val}
+    	where id = #{id}
+    </update>
 	
 </mapper>

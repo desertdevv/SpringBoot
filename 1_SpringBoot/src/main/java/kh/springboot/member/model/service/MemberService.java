@@ -90,6 +90,14 @@ public class MemberService {
 		return mapper.deleteTodo(num);
 	}
 
+	public ArrayList<Member> selectMembers() {
+		return mapper.selectMembers();
+	}
+
+	public int updateMemberItem(HashMap<String, String> map) {
+		return mapper.updateMemberItem(map);
+	}
+
 
 
 

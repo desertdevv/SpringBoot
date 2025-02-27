@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import kh.springboot.board.model.service.BoardService;
 import kh.springboot.board.model.vo.Board;
+import kh.springboot.member.model.service.MemberService;
+import kh.springboot.member.model.vo.Member;
 import lombok.RequiredArgsConstructor;
 
 
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminController {
 	
 	private final BoardService bService;
+	private final MemberService mService;
 	
 	@GetMapping("home")
 	public String meoveToMaininAdmin(Model model) {
@@ -67,6 +70,15 @@ public class AdminController {
 		System.out.println(list.toString());
 		
 		return "admin";
+	}
+	
+	
+	
+	@GetMapping("members")
+	public String selectMembers(Model model) {
+		ArrayList<Member> list = mService.selectMembers();
+		model.addAttribute("list",list);
+		return "members" ;
 	}
 	
 	

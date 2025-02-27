@@ -279,7 +279,8 @@
 					const message = label.children[1].children[0].className.baseVal.includes('fill') ? '중요표시된일정입니다. ' : '';
 					if(confirm(message + '정말 삭제하겠습니까?')){
 						$.ajax({
-							url:'/member/ldelete',
+							url:'/member/list',
+							type:'delete',
 							data:{num:todoNum},
 							success:data=>{
 								//console.log(data)
@@ -311,7 +312,8 @@
 					todo.focus();
 				}else{
 					$.ajax({
-						url: '/member/linsert',
+						url: '/member/list',
+						type : 'post',
 						data: {todo:todoValue, writer:loginUser.id},
 						success: data =>{
 							//console.log(data)
@@ -364,7 +366,8 @@
 					
 					
 					$.ajax({
-						url: '/member/lupdate',
+						url: '/member/list',
+						type: 'put',
 						data: {status:checked, todoNum:this.value},
 						success: data=>{
 							console.log(data);
@@ -414,7 +417,8 @@
 					const important = this.children[0].className.baseVal.indexOf('fill') > 0 ? 'N' : 'Y';
 					
 					$.ajax({
-						url: '/member/lupdate',
+						url: '/member/list',
+						type: 'put',
 						data: {important:important, todoNum:this.previousElementSibling.value},
 						success: data =>{
 // 							console.log(data);
@@ -457,7 +461,7 @@
 			$.ajax({
 				url:'/member/profile',
 				data: formData,
-				type: 'post',
+				type: 'put',
 				processData: false, // data 를 String으로 변환하냐 여부
 				contentType : false, // 전달하는 데이터 형식(false : 설정하지않음 ture:  application/x-www=form-urlencoded)
 				success: data =>{

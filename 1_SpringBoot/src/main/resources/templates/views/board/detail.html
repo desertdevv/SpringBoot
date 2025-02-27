@@ -133,8 +133,9 @@
 			/*<![CDATA[*/
 			document.getElementById('replySubmit').addEventListener('click',()=>{
 				$.ajax({
-					url: '/board/rinsert',
-					dateType:'json',
+					url: '/board/reply',
+					type: 'post',
+// 					dateType:'json',
 					data: {
 						replyContent:document.getElementById('replyContent').value,
 						refBoardId:/*[[${b.boardId}]]*/1,
@@ -247,7 +248,8 @@
 // 						console.log('쓰레기통');
 						if(confirm('정말 삭제 하시겠습니까?')){
 							$.ajax({
-								url: '/board/rdelete',
+								url: '/board/reply',
+								type: 'delete',
 								data: {rId:replyId},
 								success: data=>{
 // 									console.log(data);
@@ -263,7 +265,8 @@
 					}else if(targetSVG.className.baseVal.includes('check')){
 						//수정완료
 						$.ajax({
-							url: '/board/rupdate',
+							url: '/board/reply',
+							type: 'put',
 							data : {replyId:replyId, replyContent:contentTd.children[0].value},
 							success: data=>{
 // 								console.log(data);
