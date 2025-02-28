@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -213,11 +214,23 @@ public class AjaxController {
 	}
 	
 	@PutMapping("members")
-	public int updateMember(@RequestParam("val") String value, @RequestParam("col") String column, @RequestParam("id") String id) {
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put("val", value);
-		map.put("col", column);
-		map.put("id", id);
+//	public int updateMember(@RequestBody("val") String value, @RequestParam("col") String column, @RequestParam("id") String id) {
+//		HashMap<String, String> map = new HashMap<String, String>();
+//		map.put("val", value);
+//		map.put("col", column);
+//		map.put("id", id);
+	public int updateMember(@RequestBody HashMap<String, String> map){
+		System.out.println(map);
+		
+		if(map.get("column").equals("NICKNAME")) {
+			int count = mService.checkValue(map);
+			if(count != 0) {
+				return -1;
+			}
+		}else if(map.get("column").equals("STATUS")||map.get("column").equals("ADMIN")) {
+			map.put("column",map.get("column").equals("STATUS") ? "member_status" : "is_admin");
+		}
+		
 		return mService.updateMemberItem(map);
 	}
 	

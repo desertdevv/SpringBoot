@@ -9,6 +9,16 @@
 	.table td>div{border: 1px solid black; height: 80%; width: 45%; display: inline-block; padding-top: 3%; cursor: pointer;}
 	.select{background: lightgray;}
 	.unselect{background: none;}
+	.vibration{animation: vibration 0.1s infinite;}
+	@keyframes vibration{
+		from{
+			transform: rotate(1deg);
+		}
+		to{
+			transform: rotate(-deg);
+		}
+	}
+	
 </style>
 <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 </head>
@@ -98,126 +108,198 @@
 			
 			
 			for(let i = 0; i<tds.length; i++){
+				const index = i% 11;
+				
+				const stateButtons = tds[i].querySelectorAll('div');
+				for(const button of stateButtons){
+					button.addEventListener('click',function(){
+						if(this.className == 'unselect'){
+							// 회원의 상태값을 바꾸는 비동기를 작설할건데 fetch방식으로
+							// url : '/admin/members'
+							fetch('/admin/members',{
+								method:'put',
+								headers: {'content-type':'application/json; charset=UTF-8'},
+								body: JSON.stringify({
+									value: this.innerText,
+									column:document.getElementsByTagName('th')[index].innerText,
+									id:this.parentElement.parentElement.children[0].innerText
+								})
+							})
+							.then(response=>response.json())
+							.then(data=>{
+// 								console.log(data);
+								if(data==1){
+									this.className ='select';
+									for(const siblings of this.parentElement.children){
+										if(siblings !=this){
+											siblings.className = 'unselect';
+										}
+									}
+								}else{
+									alert('상태 변경에 실패하여 페이지가 새로고침 됩니다.');
+									location.reload();
+								}
+							})
+						}
+					})
+				}
+				
 				tds[i].addEventListener('dblclick',function(){
 // 					console.log(this);
 
-					//더블클릭해서 textfield를 만들었을때 먼저 생성된 textfiled는 사라지게 만드는 작업
-					for(let j =0; j<tds.length; j++){
-						if(tds[j].children[0] != undefined && tds[j].children[0].value != undefined){
-							tds[j].innerHTML = '<td>' + beforeData + '</td>';
-							break;
-						}
-					}
+					
+					
+					if(document.getElementsByClassName('updateData').length ==  0){
+						//더블클릭해서 수정칸 만들기
+						//const index = i% 11
 
-					//더블클릭해서 수정칸 만들기
-					const index = i% 11;
-					if(index !=0 && index !=8 && index!=9 && index!=10){
-						beforeData = this.innerText;
-						if(index==3){
-							const domain = this.innerText.split('@')[1];
-							let selected = '<select class="updateData">\
-												<option>naver.com</option>\
-												<option>gmail.com</option>\
-												<option>nate.com</option>\
-												<option>hanmail.com</option>\
-											</select>';
-							if(domain =='gmail.com'){
-								selected = '<select> class="updateData"\
-									<option>naver.com</option>\
-									<option selected>gmail.com</option>\
-									<option>nate.com</option>\
-									<option>hanmail.com</option>\
-								</select>';
-							}else if(domain =='nate.com'){
-								selected = '<select class="updateData">\
-									<option>naver.com</option>\
-									<option>gmail.com</option>\
-									<option selected>nate.com</option>\
-									<option>hanmail.com</option>\
-								</select>';
-								
-							}else if(domain =='hanmail.com'){
-								selected = '<select class="updateData">\
-									<option>naver.com</option>\
-									<option>gmail.com</option>\
-									<option>nate.com</option>\
-									<option selected>hanmail.com</option>\
-								</select>';
+						if(index !=0 && index !=8 && index!=9 && index!=10){
+							beforeData = this.innerText;
+							if(index==3){
+								const domain = this.innerText.split('@')[1];
+								let selected = '<select class="updateData">\
+													<option>naver.com</option>\
+													<option>gmail.com</option>\
+													<option>nate.com</option>\
+													<option>hanmail.com</option>\
+												</select>';
+								if(domain =='gmail.com'){
+									selected = '<select> class="updateData"\
+										<option>naver.com</option>\
+										<option selected>gmail.com</option>\
+										<option>nate.com</option>\
+										<option>hanmail.com</option>\
+									</select>';
+								}else if(domain =='nate.com'){
+									selected = '<select class="updateData">\
+										<option>naver.com</option>\
+										<option>gmail.com</option>\
+										<option selected>nate.com</option>\
+										<option>hanmail.com</option>\
+									</select>';
+									
+								}else if(domain =='hanmail.com'){
+									selected = '<select class="updateData">\
+										<option>naver.com</option>\
+										<option>gmail.com</option>\
+										<option>nate.com</option>\
+										<option selected>hanmail.com</option>\
+									</select>';
+								}
+								this.innerHTML ='<input type="text" value="' + this.innerText.split('@')[0] + '" size=""  class="updateData">@ ' + selected;
+							}else if(index ==4){
+								let checked = '<input type="radio" name="gender" value="M" class="updateData"> M\
+												<input type="radio" name ="gender" value="F" checked class="updateData"> F';
+								if(this.innerText =='M'){
+									checked ='<input type="radio" name="gender" value="M" checked> class="updateData" M\
+												<input type="radio" name ="gender" value="F" class="updateData"> F';
+								}
+								this.innerHTML=checked;
+							}else if(index ==5){
+								this.innerHTML ='<input type="number" value="' +this.innerText + '" size="5" min="0" max="100" class="updateData">';
+							}else{
+								this.innerHTML ='<input type="text" value="' +this.innerText + '" size="12" class="updateData">';
 							}
-							this.innerHTML ='<input type="text" value="' + this.innerText.split('@')[0] + '" size=""  class="updateData">@ ' + selected;
-						}else if(index ==4){
-							let checked = '<input type="radio" name="gender" value="M" class="updateData"> M\
-											<input type="radio" name ="gender" value="F" checked class="updateData"> F';
-							if(this.innerText =='M'){
-								checked ='<input type="radio" name="gender" value="M" checked> class="updateData" M\
-											<input type="radio" name ="gender" value="F" class="updateData"> F';
-							}
-							this.innerHTML=checked;
-						}else if(index ==5){
-							this.innerHTML ='<input type="number" value="' +this.innerText + '" size="5" min="0" max="100" class="updateData">';
-						}else{
-							this.innerHTML ='<input type="text" value="' +this.innerText + '" size="12" class="updateData">';
-						}
+					
+					
 						
 						
 						// 데이터 수정 비동기 적용
 						const updateDatas = document.getElementsByClassName('updateData');
 // 						console.log(updateDatas);
-						for(const update of updateDatas){
-							update.addEventListener('keyup',function(event){
-								if(event.key=='Enter'){
-									let updData='';
-									if(update.type =='radio'){
-										for(const elem of updateDatas){
-											if(elem.checked){
-												updData = elem.value;
-												break;
+							for(const update of updateDatas){
+								update.addEventListener('keyup',function(event){
+									if(event.key=='Enter'){
+										let updData='';
+										if(update.type =='radio'){
+											for(const elem of updateDatas){
+												if(elem.checked){
+													updData = elem.value;
+													break;
+												}
+											}
+										}else{
+											for(let i=0; i<updateDatas.length; i++){
+												if(i==0){
+													updData = updateDatas[i].value;
+												}else{
+													updData += '@' + updateDatas[i].value;
+												}
 											}
 										}
-									}else{
-										for(let i=0; i<updateDatas.length; i++){
-											if(i==0){
-												updData = updateDatas[i].value;
-											}else{
-												updData += '@' + updateDatas[i].value;
-											}
-										}
-									}
-									
-									
-									$.ajax({
-										url:'/admin/members',
-										data: {
-											val:updData,
-											col:document.getElementsByTagName('th')[index].innerText,
-											id:this.parentElement.parentElement.children[0].innerText
-										},
-										type:'put',
-										success: data =>{
-// 											console.log(data);
-											if(data==1){
+										
+										
+										// fetch('url',{설정})
+										// .then(성공 시)
+										// .catch(에러 시)
+										
+										
+										
+										fetch('/admin/members',{
+											method: 'put',
+											headers: {'content-type':'application/json; charset=UTF-8'},
+											body: JSON.stringify({
+												value:updData,
+												column:document.getElementsByTagName('th')[index].innerText,
+												id:this.parentElement.parentElement.children[0].innerText
+											})
+										})
+										.then(response => response.json())
+										.then(data =>{
+											if(data==-1){
+												this.classList.add('vibration');
+												setTimeout(()=>{
+													this.classList.remove('vibration');
+												},400);
+											}else if(data==1){
 												this.parentElement.innerText=updData;
 											}else{
 												alert('수정이 실패하여 페이지가 새로고침됩니다.');
 												location.reload();
 											}
-										},
-										error: data => console.log(data)
+										})
 										
-									})
-									
-									
-									
-									
-									
-								}
-							})
+										
+										
+// 										$.ajax({
+// 											url:'/admin/members',
+// 											data: {
+// 												val:updData,
+// 												col:document.getElementsByTagName('th')[index].innerText,
+// 												id:this.parentElement.parentElement.children[0].innerText
+// 											},
+// 											type:'put',
+// 											success: data =>{
+// 	// 											console.log(data);
+// 												if(data==1){
+// 													this.parentElement.innerText=updData;
+// 												}else{
+// 													alert('수정이 실패하여 페이지가 새로고침됩니다.');
+// 													location.reload();
+// 												}
+// 											},
+// 											error: data => console.log(data)
+// 										})
+										
+									}
+								})
+							}
+						}else{
+							alert('수정할수없는 항목입니다.')
 						}
-			
-						
 					}else{
-						alert('수정할수없는 항목입니다.')
+						//더블클릭해서 textfield를 만들었을때 먼저 생성된 textfiled는 사라지게 만드는 작업
+						for(let j =0; j<tds.length; j++){
+							if(tds[j].children[0] != undefined && tds[j].children[0].value != undefined){
+								
+								if(tds[j] !=this){
+								tds[j].innerHTML = '<td>' + beforeData + '</td>';
+								}
+								break;
+							}
+						}	
 					}
+						
 				});
 			}
 		}
