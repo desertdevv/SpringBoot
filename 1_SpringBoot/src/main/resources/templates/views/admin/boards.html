@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+	span{font-size: 12px;}
+	.table td{cursor: pointer;}
+	.table td>div{border: 1px solid black; height: 80%; width: 45%; display: inline-block; padding-top: 3%; cursor: pointer;}
+	.select{background: lightgray;}
+</style>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+</head>
+<body>
+	<div th:replace="views/common/navbar"></div>
+	<div th:replace="views/common/adminSymbol"></div>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div th:replace="views/common/adminbar"></div>
+
+			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1 class="h2">Boards</h1>
+				</div>
+				
+				<div class="bd-example">
+					<table class="table table-hover" style="text-align: center;">
+						<thead>
+							<tr >
+								<th>NO.</th>
+								<th>TITLE</th>
+								<th>WRITER</th>
+								<th>CREATE</th>
+								<th>MODIFY</th>
+								<th>VIEWS</th>
+								<th>STATUS</th>
+							</tr>
+						</thead>
+						<tbody> 
+							<tr th:each="b:${list}">
+								<td th:text="${b.boardId}"></td>
+								<td th:text="${b.boardTitle}"></td>
+								<td th:text="${b.nickName}"></td>
+								<td>[[${b.createDate}]]</td>
+								<td th:text="${b.modifyDate}"></td>
+								<td>[[${b.boardCount}]]</td>
+								<td>
+									<div th:class="${b.status =='Y' ? 'select' : ''}">Y</div>
+									<div th:class="${b.status =='N' ? 'select' : ''}">N</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+		       	
+				<nav aria-label="Standard pagination example" style="float: right;">
+					<ul class="pagination">
+						<li class="page-item">
+							<a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous">
+								<span aria-hidden="true">&laquo;</span>
+							</a>
+						</li>
+						<li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+							<a class="page-link" th:href="@{${loc}(page=${p})}" th:text="${p}"></a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next">
+								<span aria-hidden="true">&raquo;</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</main>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="exampleModalCenteredScrollable" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+<!-- 				x 버튼 -->
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalCenteredScrollableTitle"></h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+<!-- 				내용 -->
+				<div class="modal-body"></div>
+<!-- 				작성자 -->
+				<div class="modal-body" style="text-align: right; font-size: 14px;"></div>
+				<div class="modal-footer">
+<!-- 				올리기면 내리기 내리기면 올리기로 바꾸기 -->
+					<button type="button" class="btn btn-primary">게시글 올리기</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script th:inline="javascript">
+	// 1 글 내용이 담긴 modal띄우기
+	// 2 modal 내 상태 변경 버튼구현
+	// 3 boards메인에서 상태변경 버튼 구현
+	
+	window.onload=()=>{
+		const tbody = document.querySelector('tbody');
+		const tds = tbody.querySelectorAll('td');
+		/*<![CDATA[*/
+		const list = /*[[${list}]]*/null;
+		/*]]>*/
+		
+		const modalBody = document.querySelectorAll('.modal-body');
+		const modalButton = modalBody[1].nextElementSibling.querySelector('button');		
+		let boardId = null;
+		let divs = null;
+		
+		for(const td of tds){
+			if(td.children.length ==0){
+				td.setAttribute('data-bs-toggle','modal');
+				td.setAttribute('data-bs-target','#exampleModalCenteredScrollable');
+			}
+		
+		
+			td.addEventListener('click',function(){
+				const trTds =this.parentElement.querySelectorAll('td');
+				boardId = trTds[0].innerText;
+				divs = trTds[6].children;
+				for(const b of list){
+					if(b.boardId == boardId){
+						
+						document.getElementById('exampleModalCenteredScrollableTitle').innerText= b.boardTitle;
+						modalBody[0].innerText=b.boardContent;
+						modalBody[1].innerText="작성자 : "+b.nickName;
+						
+						if(divs[0].className == 'select'){
+							modalButton.innerText = '게시글 내리기';
+							modalButton.className = 'btn btn-dark';
+						}else{
+							modalButton.innerText = '게시글 올리기';
+							modalButton.className = 'btn btn-primary';
+						}
+						
+						break;
+					}
+				}
+			});
+			
+			
+			// div에 클릭이벤트가 들어가면 해당 게시글의 상태값 변경하기
+			// /admin/status에 요청
+			
+			const tableButtons = td.querySelectorAll('div');
+			for(const btn of tableButtons){
+				btn.addEventListener('click',function(){
+					if(this.className != 'select'){
+						fetch('/admin/status',{
+							method: 'put',
+							headers: {'content-type':'application/json; charset=UTF-8'},
+							body:JSON.stringify({
+								id:this.parentElement.parentElement.children[0].innerText,
+								status: this.innerText
+							})
+						})
+						.then(response => response.json())
+						.then(data=>{
+							if(data==1){
+								for(const div of divs){
+									div.classList.toggle('select')
+								}
+							}else{
+								alert('상태변경에 실패하여 페이지가 새로고침 됩니다.');
+								location.reload();
+							}
+						})
+					}
+				})
+			}
+			
+			
+			
+			
+			
+			
+			
+		}
+		
+		
+		modalButton.addEventListener('click',function(){
+			// /admin/status에 게시글의 상태값을 변경할 수 있또록 비동기 통신 연결
+			
+			fetch('/admin/status',{
+				method: 'put',
+				headers: {'content-type':'application/json; charset=UTF-8'},
+				body: JSON.stringify({
+					id: boardId,
+					status: this.innerText == '게시글 올리기' ? 'Y' : 'N'
+				})
+			})
+			.then(response => response.json())
+			.then(data=>{
+// 					console.log(data);
+				if(data ==1){
+					if(this.innerText=='게시글 올리기'){
+						this.innerText = '게시글 내리기';
+						this.className = 'btn btn-dark';
+					}else{
+						this.innerText = '게시글 올리기';
+						this.className = 'btn btn-primary';
+					}
+					for(const div of divs){
+						div.classList.toggle('select');
+					}
+				}else{
+					alert('상태 변경에 실패하여 페이지가 새로고침됩니다.')
+					location.reload();
+				}
+			})
+		});
+		
+		
+		
+	}
+	
+	
+	
+	</script>
+</body>
+</html>

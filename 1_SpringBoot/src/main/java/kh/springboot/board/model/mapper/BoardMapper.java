@@ -1,6 +1,7 @@
 package kh.springboot.board.model.mapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.RowBounds;
@@ -50,6 +51,8 @@ public interface BoardMapper {
 	int updateReply(Reply r);
 
 	ArrayList<Board> selectRecentBoards();
+
+	int updateBoardStatus(HashMap<String, Object> map);
 
 
 

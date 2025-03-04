@@ -1,6 +1,7 @@
 package kh.springboot.board.model.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
@@ -124,6 +125,10 @@ public class BoardService {
 
 	public ArrayList<Board> selectRecentBoards() {
 		return mapper.selectRecentBoards();
+	}
+
+	public int updateBoardStatus(HashMap<String, Object> map) {
+		return mapper.updateBoardStatus(map);
 	}
 
 	

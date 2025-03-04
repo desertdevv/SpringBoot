@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -30,10 +31,13 @@ import com.google.gson.GsonBuilder;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kh.springboot.board.model.service.BoardService;
 import kh.springboot.board.model.vo.Board;
+import kh.springboot.board.model.vo.PageInfo;
 import kh.springboot.board.model.vo.Reply;
+import kh.springboot.common.Pagination;
 import kh.springboot.member.model.service.MemberService;
 import kh.springboot.member.model.vo.Member;
 import kh.springboot.member.model.vo.TodoList;
@@ -233,6 +237,13 @@ public class AjaxController {
 		
 		return mService.updateMemberItem(map);
 	}
+	
+	@PutMapping("status")
+	public int updateBoardStatus(@RequestBody HashMap<String, Object> map) {
+		return bService.updateBoardStatus(map); 
+	}
+	
+
 	
 	
 }

@@ -5,14 +5,23 @@
 	<select id ="getListCount" resultType="_int">
 		select count(*)
 		from board
-		where board_status = 'Y' and board_type = #{i}
+		where board_type = abs(#{i})
+		
+		<if test="i > 0">
+			and board_status = 'Y'
+		</if>
+		
 	</select>
 
 	<select id="selectBoardList" resultMap="boardResultSet">
 		select *
 		from board
 			join member on(board_writer =id)
-		where board_status = 'Y' and board_type = #{i}
+		where 
+		<if test="i >0">
+		board_status = 'Y' and
+		</if> 
+		board_type = abs(#{i})
 		order by board_id desc
 	</select>
 	
@@ -180,7 +189,13 @@ selectKey 적용 시키기
 		order by board_id desc
 		]]>
 	</select>
-
+	
+	<update id ="updateBoardStatus">
+		update board
+		set board_status = #{status}
+		where board_id = #{id}
+	</update>
+	
 
 
 </mapper>
