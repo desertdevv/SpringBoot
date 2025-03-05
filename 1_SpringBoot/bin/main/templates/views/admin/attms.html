@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+	span {font-size: 12px;}
+	.table td {cursor: pointer;}
+	.status {
+		border: 1px solid black; height: 80%; width: 45%;
+		display: inline-block; padding-top: 3%; cursor: pointer;
+	}
+	.selectState {background: lightgray;}
+	
+	.content:hover{cursor: pointer; background: #eee; border-radius: .75rem;}
+	.thumbnail {width: 4rem; height: 4rem;}
+	.img-border{border-radius: .75rem;}
+	.img-border *{border-radius: .75rem; border: 1px solid lightgray;}
+	.contentImg {width: 3rem; height: 3rem;}
+</style>
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+</head>
+<body>
+	<div th:replace="~{views/common/navbar}"></div>
+	<div th:replace="~{views/common/adminSymbol}"></div>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div th:replace="~{views/common/adminbar}"></div>
+
+			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+					<h1 class="h2">Attachment</h1>
+				</div>
+
+				<div class="row g-4 py-1 row-cols-lg-3">
+					<div th:each="b : ${list}">
+						<div class="content" data-bs-toggle="modal" data-bs-target="#exampleModalCenteredScrollable">
+							<input type="hidden" class="no" th:value="${b.boardId}">
+							<div class="imgsDiv">
+								<!-- 첨부파일 미리보기 -->
+								
+								<th:block th:each="a: ${aList}" th:if="${b.boardId == a.refBoardId}">
+									<th:block th:if="${#strings.containsIgnoreCase(a.renameName, 'jpg') or #strings.containsIgnoreCase(a.renameName, 'png')}">
+										<div class="thumbnail d-inline-flex img-border" th:if="${a.attmLevel == 0}">
+											<img th:src="@{/}+${a.renameName}" width="100%">
+										</div>
+										<div class="contentImg d-inline-flex img-border" th:if="${a.attmLevel != 0}">
+											<img th:src="@{/}+${a.renameName}" width="100%">
+										</div>										
+									</th:block>
+									
+									<th:block th:unless="${#strings.containsIgnoreCase(a.renameName, 'jpg') or #strings.containsIgnoreCase(a.renameName, 'png')}">
+										<div class="thumbnail d-inline-flex img-border" th:if="${a.attmLevel == 0}" style="background: lightgray;"></div>
+										<div class="contentImg d-inline-flex img-border" th:if="${a.attmLevel != 0}" style="background: lightgray;"></div>	
+									</th:block>
+								</th:block>
+								
+	
+								
+							</div>
+							<h3 class="fs-2 text-body-emphasis">[[${b.boardTitle}]]</h3>
+							<p style="height: 50px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">[[${b.boardContent}]]</p>
+							<p>
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+									<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+								</svg> <span class="writer">[[${b.nickName}]]</span>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar2-event" viewBox="0 0 16 16">
+									<path d="M11 7.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/>
+									<path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
+									<path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z"/>
+								</svg> <span class="createDate">[[${b.createDate}]]</span>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+									<path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+									<path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+								</svg> <span class='count'>[[${b.boardCount}]]</span>
+							</p>
+						</div>
+						<button th:class="|${b.status == 'Y' ? 'btn btn-primary' : 'btn btn-dark'} changeState|" th:text="${b.status == 'Y' ? '게시 중' : '게시 중단'}"></button>
+					</div>
+				</div>
+
+				<nav aria-label="Standard pagination example" style="float: right;">
+					<ul class="pagination">
+						<li class="page-item">
+							<a class="page-link" th:href="@{${loc}(page=${pi.currentPage-1})}" aria-label="Previous"> 
+								<span aria-hidden="true">&laquo;</span>
+							</a>
+						</li>
+						<li class="page-item" th:each="p : ${#numbers.sequence(pi.startPage, pi.endPage)}">
+							<a class="page-link" th:href="@{${loc}(page=${p})}" th:text="${p}"></a>
+						</li>
+						<li class="page-item">
+							<a class="page-link" th:href="@{${loc}(page=${pi.currentPage+1})}" aria-label="Next">
+								<span aria-hidden="true">&raquo;</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</main>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="exampleModalCenteredScrollable" tabindex="-1" aria-labelledby="exampleModalCenteredScrollableTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalCenteredScrollableTitle"></h1><!-- 여기에 제목 -->
+					<div class="modal-body" style="text-align: right; font-size: 14px;"></div><!-- 작성자 -->
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body"></div><!-- 내용 (boardContent+ 사진width 100%,height 200, 다른건 회색)-->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary">게시 중</button> <!-- 밖에서 보여지는 상태값이 그대로 보이게. 게시 중단 (btn-dark) -->
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script th:inline="javascript">
+		//여러개의 이미지를 집어넣으면깨지니까 최대 6개까지만보이고 그뒤는 다보여주지않고 뒤에 ... 이라고 집어넣어서 있따고 알려주다
+		window.onload=()=>{
+			const imgsDivs = document.querySelectorAll('.imgsDiv');
+			for(imgsDiv of imgsDivs){
+				const divs = imgsDiv.querySelectorAll('div');
+				if(divs.length>6){
+					for(let i = divs.length-1; i >=6; i--){
+						divs[i].remove();
+					}
+					imgsDiv.append('...');
+				}
+			}
+			
+			
+			//content 가 클릭이되면 모달창이 나와서 기능이 되게하기
+			
+			
+			const contents = document.querySelectorAll('.content');
+			/*<![CDATA[*/
+			const attmList = /*[[${aList}]]*/null;
+			/*]]>*/
+			
+			
+			const modalBody = document.querySelectorAll('.modal-body');
+			const modalButton = modalBody[1].nextElementSibling.querySelector('button');
+			
+			let clickContent = null;
+			
+			for(const content of contents){
+				content.addEventListener('click',function(){
+					clickContent = this;
+					document.getElementById('exampleModalCenteredScrollableTitle').innerText =this.querySelector('h3').innerText;
+					
+					modalBody[0].innerText = '작성자 : ' + this.querySelector('.writer').innerText;
+					
+					modalBody[1].innerHTML = this.querySelector('h3').nextElementSibling.innerText + '<br><br>';
+					
+					for(const attm of attmList){
+						if(this.querySelector('.no').value == attm.refBoardId){
+							if(attm.renameName.toLowerCase().includes('jpg')||attm.renameName.toLowerCase().includes('png')){
+								modalBody[1].innerHTML += '<img src="/' + attm.renameName + '" width="100%" height="200"><br><br>';
+							}else{
+								modalBody[1].innerHTML += '<div style="text-align: center; color:white; background: lightgray; width:100% height:200px; line-height: 200px;"> no image('+ attm.originalName +')</div><br>';
+							}
+						}
+					}
+					
+					
+					if(this.nextElementSibling.innerText == '게시 중'){
+						modalButton.innerText = '게시 중';
+						modalButton.className = 'btn btn-primary';
+					}else{
+						modalButton.innerText ='게시 중단';
+						modalButton.className = 'btn btn-dark';
+					}
+					
+				});
+				
+				
+				
+				// 밖에 게시 중 건드리면 게시중 > 게시중단 반대로도.
+				
+				content.nextElementSibling.addEventListener('click',function(){
+					fetch('/admin/status',{
+						method :'put',
+						headers: {'content-type':'application/json; charset=UTF-8'},
+						body: JSON.stringify({
+							status:this.innerText=='게시 중' ? 'N' : 'Y',
+							id:	this.previousElementSibling.querySelector('.no').value
+						})
+					})
+					.then(response => response.json())
+					.then(data=>{
+						if(data==1){
+							if(this.innerText =='게시 중'){
+								this.innerText = '게시 중단';
+								this.className = 'btn btn-dark';
+							}else{
+								this.innerText = '게시 중';
+								this.className = 'btn btn-primary';
+							}
+						}else{
+							alert('상태변경실패하여 페이지 새로고침');
+							location.reload();
+						}
+					})
+				})
+				
+				
+			}
+			
+			
+			// 모달 내부버튼 누를때 상태값 변경하기.
+			
+			
+			modalButton.addEventListener('click',function(){
+				fetch('/admin/status',{
+					method: 'put',
+					headers: {'content-type':'application/json; charset=UTF-8'},
+					body: JSON.stringify({
+						status:this.innerText=='게시 중' ? 'N' : 'Y',
+						id:	clickContent.querySelector('.no').value
+					})
+				})
+				.then(response => response.json())
+				.then(data=>{
+// 					console.log(data);
+					if(data==1){
+						let text = null;
+						let css =null;
+						if(this.innerText =='게시 중'){
+							text = '게시 중단';
+							css = 'btn btn-dark'
+						}else{
+							text = '게시 중';
+							css = 'btn btn-primary';
+						}
+						this.innerText = text;
+						this.className = css;
+						clickContent.nextElementSibling.innerText = text;
+						clickContent.nextElementSibling.className = css;
+					}else{
+						alert('상태변경실패하여 페이지 새로고침');
+						location.reload();
+					}
+				})
+			});
+			
+
+			
+			
+		}
+		
+	</script>
+</body>
+</html>

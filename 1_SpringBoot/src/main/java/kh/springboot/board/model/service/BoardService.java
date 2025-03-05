@@ -131,6 +131,10 @@ public class BoardService {
 		return mapper.updateBoardStatus(map);
 	}
 
+	public ArrayList<Attachment> selectAllAttm() {
+		return mapper.selectAllAttm();
+	}
+
 	
 
 

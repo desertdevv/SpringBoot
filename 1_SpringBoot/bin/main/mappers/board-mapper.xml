@@ -196,6 +196,10 @@ selectKey 적용 시키기
 		where board_id = #{id}
 	</update>
 	
+	<select id="selectAllAttm" resultType="Attachment">
+		select * from attachment
+		order by ref_board_id, attm_level, attm_id
+	</select>
 
 
 </mapper>

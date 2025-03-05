@@ -7,18 +7,17 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletRequest;
 import kh.springboot.board.model.service.BoardService;
+import kh.springboot.board.model.vo.Attachment;
 import kh.springboot.board.model.vo.Board;
 import kh.springboot.board.model.vo.PageInfo;
 import kh.springboot.common.Pagination;
@@ -104,6 +103,20 @@ public class AdminController {
 		model.addAttribute("loc",request.getRequestURL());
 		
 		return "boards";
+	}
+	
+	@GetMapping("attms")
+	public String selectAttms(@RequestParam(value="page", defaultValue="1") int currentpage, Model model, HttpServletRequest request) {
+		int listCount = bService.getListCount(-2);
+		PageInfo pi = Pagination.getPageInfo(currentpage, listCount, 10);
+		ArrayList<Board> list = bService.selectBoardList(pi, -2);
+		ArrayList<Attachment> aList = bService.selectAllAttm();
+		
+		model.addAttribute("list",list);
+		model.addAttribute("aList",aList).addAttribute("pi",pi).addAttribute("loc",request.getRequestURI());
+		
+		
+		return "attms";
 	}
 	
 
