@@ -6,6 +6,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -18,26 +25,16 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kh.springboot.board.model.service.BoardService;
 import kh.springboot.board.model.vo.Board;
-import kh.springboot.board.model.vo.PageInfo;
 import kh.springboot.board.model.vo.Reply;
-import kh.springboot.common.Pagination;
 import kh.springboot.member.model.service.MemberService;
 import kh.springboot.member.model.vo.Member;
 import kh.springboot.member.model.vo.TodoList;
@@ -243,7 +240,67 @@ public class AjaxController {
 		return bService.updateBoardStatus(map); 
 	}
 	
-
+	@GetMapping("weather")
+	public String getWeather() {
+        StringBuilder sb = new StringBuilder();
+		try {
+	        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"); /*URL*/
+	        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=DZyonm4DibjV69wFU7CpADEqwxeeyqBEkq1%2BHy5BHOnj3w%2BAzvW7eOlF9kk3DmL8Mc9bhki%2FttCgfyjBIK7O4g%3D%3D"); /*Service Key*/
+	        urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
+	        urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("1000", "UTF-8")); /*한 페이지 결과 수*/
+	        urlBuilder.append("&" + URLEncoder.encode("dataType","UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*요청자료형식(XML/JSON) Default: XML*/
+	        
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd HHmm");
+	        String now = sdf.format(new Date());
+	        String[] dayTime = now.split(" ");
+	        
+	        urlBuilder.append("&" + URLEncoder.encode("base_date","UTF-8") + "=" + URLEncoder.encode(dayTime[0], "UTF-8")); /*‘21년 6월 28일발표*/
+	        
+	        int[] baseTime = {200,500,800,1100,1400,1700,2000,2300};
+	        int index =99;
+	        for(int i=0; i<baseTime.length; i++) {
+	        	if(Integer.parseInt(dayTime[1])<=baseTime[i]) {
+	        		index = i -1;
+	        		
+	        		if(i==0) {
+	        			index = i;
+	        		}
+	        		
+	        		break;
+	        	}
+	        }
+	        
+	        if(index ==99) {
+	        	dayTime[1] = "2300";
+	        }
+	        
+	        dayTime[1] = ("0" + baseTime[index]).substring(("0" + baseTime[index]).length()-4);
+	        
+	        urlBuilder.append("&" + URLEncoder.encode("base_time","UTF-8") + "=" + URLEncoder.encode(dayTime[1], "UTF-8")); /*05시 발표*/
+	        urlBuilder.append("&" + URLEncoder.encode("nx","UTF-8") + "=" + URLEncoder.encode("60", "UTF-8")); /*예보지점의 X 좌표값*/
+	        urlBuilder.append("&" + URLEncoder.encode("ny","UTF-8") + "=" + URLEncoder.encode("127", "UTF-8")); /*예보지점의 Y 좌표값*/
+	        URL url = (new URI(urlBuilder.toString())).toURL();
+	        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	        conn.setRequestMethod("GET");
+	        conn.setRequestProperty("Content-type", "application/json");
+//	        System.out.println("Response code: " + conn.getResponseCode());
+	        BufferedReader rd;
+	        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300) {
+	            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+	        } else {
+	            rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+	        }
+	        String line;
+	        while ((line = rd.readLine()) != null) {
+	            sb.append(line);
+	        }
+	        rd.close();
+	        conn.disconnect();
+//	        System.out.println(sb.toString());
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
 	
-	
+	}
 }
